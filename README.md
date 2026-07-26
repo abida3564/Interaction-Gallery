@@ -25,9 +25,9 @@ The gallery presents four "rooms," each a self-contained interaction study demon
 
 ## Team 
 
- - 1. Fahima Abida Chowdhury #U210
- - 2. Yeasmin Kabir Keya #U205
- - 3. Arpa Bhowmik #U220
+ -  ## Fahima Abida Chowdhury #U210
+ -  ## Yeasmin Kabir Keya #U205
+ -  ## Arpa Bhowmik #U220
 
 ## 🚀 Getting Started
 
