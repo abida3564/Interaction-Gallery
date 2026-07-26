@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interaction Gallery — Three Studies in Response By Team_5</title>
+<title>Interaction Gallery — Three Studies in Response By Team 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -639,6 +639,22 @@
     }
     .enter-btn .arrow { transition: transform 0.25s var(--ease-out); }
     .enter-btn:hover .arrow { transform: translateX(4px); }
+
+    .enter-btn.ghost {
+        background: transparent;
+        border: 1px solid #cdd8d1;
+        color: #0d1a13;
+    }
+    .enter-btn.ghost:hover {
+        background: rgba(13, 26, 19, 0.06);
+        color: #0d1a13;
+    }
+    .go-btn-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
     /* Carousel Navigation Buttons */
     .nav-arrow {
@@ -1960,7 +1976,10 @@
                 <div><div class="go-val" id="go-distance">0</div><div class="go-lbl">Points</div></div>
                 <div><div class="go-val" id="go-best">0</div><div class="go-lbl">Best</div></div>
             </div>
-            <button class="enter-btn" onclick="restartRoom2()">Try again <span class="arrow">↻</span></button>
+            <div class="go-btn-row">
+                <button class="enter-btn" onclick="restartRoom2()">Try again <span class="arrow">↻</span></button>
+                <button class="enter-btn ghost" onclick="showHome()">Exit <span class="arrow">✕</span></button>
+            </div>
         </div>
     </div>
 
