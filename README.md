@@ -29,7 +29,4 @@ The gallery presents four "rooms," each a self-contained interaction study demon
  -  ## Yeasmin Kabir Keya #U205
  -  ## Arpa Bhowmik #U220
 
-## 🚀 Getting Started
 
-### Play Online
-Open the file directly via GitHub Pages (if enabled) or any static host:
