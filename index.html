@@ -1056,18 +1056,17 @@
         margin-right: 6px;
     }
     .gesture-status.ready .g-dot { background: var(--accent-gold); box-shadow: 0 0 8px var(--accent-gold); }
-    .credits-modal { position: fixed; inset: 0; z-index: 1002; display: none; align-items: center; justify-content: center; background: rgba(4,8,6,0.7); backdrop-filter: blur(4px); }
-    .credits-modal.open { display: flex; }
-    .credits-card { background: linear-gradient(155deg, var(--bg-card-hi), var(--bg-card) 60%); border: 1px solid var(--accent-gold-soft); border-radius: 14px; padding: 30px 36px; text-align: center; position: relative; box-shadow: var(--shadow-deep); animation: home-fade-in .3s var(--ease-out); }
-    .credits-close { position: absolute; top: 8px; right: 12px; background: none; border: none; color: var(--text-dim); font-size: 1.3rem; cursor: pointer; }
-    .credits-list { list-style: none; margin-top: 12px; }
-    .credits-list li { font-family: 'Fraunces', serif; color: var(--text-light); font-size: 1.05rem; padding: 6px 0; }
+    #countdown-overlay { position: fixed; inset: 0; z-index: 1010; display: none; align-items: center; justify-content: center; background: rgba(4,8,6,0.55); }
+    #countdown-overlay.show { display: flex; }
+    #countdown-text { font-family: 'Fraunces', serif; font-weight: 700; color: var(--accent-gold); font-size: 4rem; animation: cd-pop 0.5s var(--ease-out); }
+    @keyframes cd-pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 </style>
 </head>
 <body>
 
 <div class="grain-overlay"></div>
 <div id="transition-veil"></div>
+<div id="countdown-overlay"><div id="countdown-text"></div></div>
 
 <!-- ================= HOME VIEW CAROUSEL ================= -->
 <div id="home-view">
@@ -1076,24 +1075,11 @@
     <header>
         <div class="brand-mark">
             <div>
-                <button class="eyebrow credits-link" onclick="toggleCredits(true)" style="cursor:pointer;background:none;border:none;padding:0;font:inherit;letter-spacing:3px;">★ Credits</button>
+                <div class="eyebrow">Gallery</div>
                 <h1>Interaction Gallery</h1>
             </div>
         </div>
-        <div class="sub">Three small studies in how a system<br>answers when you touch it.</div>
     </header>
-
-    <div id="credits-modal" class="credits-modal">
-        <div class="credits-card">
-            <button class="credits-close" onclick="toggleCredits(false)">×</button>
-            <div class="eyebrow">Made by</div>
-            <ul class="credits-list">
-                <li>Fahima Abida Chowdhury</li>
-                <li>Yeasmin Kabir Keya</li>
-                <li>Arpa Bhowmik</li>
-            </ul>
-        </div>
-    </div>
 
     <div class="kbd-hint"><kbd>←</kbd><kbd>→</kbd> browse &nbsp; <kbd>↵</kbd> enter</div>
 
@@ -1204,9 +1190,6 @@
                 <span class="title">Save the River</span>
             </div>
         </div>
-        <div class="top-right-controls">
-            <button class="icon-btn" onclick="toggleCredits(true)" title="Credits">★</button>
-        </div>
     </div>
 </div>
 
@@ -1239,12 +1222,18 @@
             </div>
         </div>
         <div class="top-right-controls">
+            <button class="icon-btn" id="diff-easy" onclick="setDifficulty('easy')" title="Easy">E</button>
+            <button class="icon-btn active-state" id="diff-medium" onclick="setDifficulty('medium')" title="Medium">M</button>
+            <button class="icon-btn" id="diff-hard" onclick="setDifficulty('hard')" title="Hard">H</button>
             <button class="icon-btn" id="sound-toggle-2" onclick="toggleSound()" title="Toggle sound">🔊</button>
-            <button class="icon-btn" onclick="toggleCredits(true)" title="Credits">★</button>
         </div>
     </div>
 
     <div class="hud-row">
+        <div class="hud-chip">
+            <div class="hud-label">Position</div>
+            <div class="hud-value" id="hud-position">1/6</div>
+        </div>
         <div class="hud-chip">
             <div class="hud-label">Distance</div>
             <div class="hud-value" id="hud-distance">0m</div>
@@ -1252,6 +1241,10 @@
         <div class="hud-chip">
             <div class="hud-label">Best</div>
             <div class="hud-value" id="hud-best">0m</div>
+        </div>
+        <div class="hud-chip" id="chip-tokens">
+            <div class="hud-label">Tokens</div>
+            <div class="hud-value" id="hud-tokens">0</div>
         </div>
         <div class="hud-chip" id="chip-hits">
             <div class="hud-label">Hits</div>
@@ -1268,7 +1261,7 @@
             <h3>Room 02 · How it responds</h3>
             <span class="rules-toggle">▾</span>
         </div>
-        <p>Drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the arrow keys. The road bends and forks — steer with it or hit the walls. Dodge oncoming traffic; <b style="color:var(--accent-coral)">more than 10 hits ends the run.</b></p>
+        <p>Drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the arrow keys on a wide winding highway. Race past rival cars to climb the pack; <b style="color:var(--accent-coral)">more than 10 hits ends the run.</b></p>
         <div class="pipeline-strip">
             <span><b>SIGNAL</b> distance to each traffic car</span>
             <span><b>THRESHOLD</b> gap closes under 34px</span>
@@ -1293,7 +1286,6 @@
         </div>
         <div class="top-right-controls">
             <button class="icon-btn" id="sound-toggle-3" onclick="toggleSound()" title="Toggle sound">🔊</button>
-            <button class="icon-btn" onclick="toggleCredits(true)" title="Credits">★</button>
             <button class="mic-btn" id="mic-btn" onclick="toggleMic()"><span class="mic-dot"></span> Enable Mic</button>
         </div>
     </div>
@@ -1354,7 +1346,6 @@
         </div>
         <div class="top-right-controls">
             <button class="icon-btn" id="sound-toggle-4" onclick="toggleSound()" title="Toggle sound">🔊</button>
-            <button class="icon-btn" onclick="toggleCredits(true)" title="Credits">★</button>
             <button class="mic-btn" id="camera-btn" onclick="toggleCamera()"><span class="mic-dot"></span> Enable Camera</button>
         </div>
     </div>
@@ -1622,6 +1613,7 @@
     function enterCurrentRoom(e) {
         ensureAudio();
         sfx.whoosh();
+        if (document.activeElement) document.activeElement.blur();
         const veil = document.getElementById('transition-veil');
         let originX = '50%', originY = '50%';
         if (e && e.clientX) { originX = e.clientX + 'px'; originY = e.clientY + 'px'; }
@@ -1641,6 +1633,7 @@
             if (currentRoomIndex === 1) { resizeCanvas(c2); resetPlayerCar(); }
             if (currentRoomIndex === 2) { resizeCanvas(c3); }
             if (currentRoomIndex === 3) { resizeGestureCanvasDefault(); }
+            runCountdown();
 
             veil.classList.remove('closing');
             veil.classList.add('opening');
@@ -1648,13 +1641,29 @@
         }, 320);
     }
 
-    function toggleCredits(show) {
-        document.getElementById('credits-modal').classList.toggle('open', show);
+    function runCountdown() {
+        const el = document.getElementById('countdown-overlay');
+        const txt = document.getElementById('countdown-text');
+        const seq = ['Start Game', '3', '2', '1', 'Start'];
+        el.classList.add('show');
+        let i = 0;
+        function step() {
+            txt.textContent = seq[i];
+            txt.style.animation = 'none'; void txt.offsetWidth; txt.style.animation = 'cd-pop 0.5s var(--ease-out)';
+            i++;
+            if (i < seq.length) setTimeout(step, 700);
+            else setTimeout(() => el.classList.remove('show'), 500);
+        }
+        step();
     }
 
     function showHome() {
         sfx.click();
-        if (typeof cameraRunning !== 'undefined' && cameraRunning) stopCamera();
+        stopCamera();
+        if (typeof stopMic === 'function') stopMic();
+        if (typeof stopRaceEngine === 'function') stopRaceEngine();
+        const wf = document.getElementById('waste-room1-iframe');
+        if (wf && wasteGameLoaded) { wf.srcdoc = ''; wasteGameLoaded = false; }
         document.querySelectorAll('.room-screen').forEach(s => s.classList.remove('active'));
         const home = document.getElementById('home-view');
         home.style.display = 'flex';
@@ -1727,14 +1736,22 @@
         x: 0, y: 0, angle: -Math.PI / 2, speed: 0,
         maxSpeed: 7, accel: 0.22, friction: 0.95, steerAngle: 0.05
     };
-    const CAR_HALF_WIDTH = 26; // bigger car footprint for collisions + wider drawn body
+    const CAR_HALF_WIDTH = 32;
 
     let distanceScore = 0;
     let bestDistance = 0;
     let screenShake = 0;
+    let raceDiffMul = 1;
+    function setDifficulty(d) {
+        raceDiffMul = d === 'easy' ? 0.6 : d === 'hard' ? 1.5 : 1;
+        ['easy', 'medium', 'hard'].forEach(k => document.getElementById('diff-' + k).classList.toggle('active-state', k === d));
+    }
+
     let sparkParticles = [];
+    let speedLines = [];
     let roadsideTrees = [];
     let lastHitAt = 0;
+    let lastWallHitAt = 0;
     let hitCount = 0;
     let gameOverActive = false;
     const HIT_COOLDOWN = 700;
@@ -1755,46 +1772,100 @@
     class TrafficCar {
         constructor() { this.reset(); }
         reset() {
-            this.lane = Math.floor(Math.random() * 4);
-            this.y = -100 - Math.random() * 600;
-            this.speed = 2 + Math.random() * 2.4;
-            this.color = ['#a33b3b', '#3b6ea3', '#a38d3b', '#6b3ba3'][Math.floor(Math.random() * 4)];
+            this.lane = Math.floor(Math.random() * 6);
+            this.y = -100 - Math.random() * 900;
+            this.baseSpeed = (3.4 + Math.random() * 2.6) * raceDiffMul;
+            this.progress = distanceScore + (c2.height - this.y);
+            this.color = ['#a33b3b', '#3b6ea3', '#a38d3b', '#6b3ba3', '#3ba36e', '#a35b3b'][Math.floor(Math.random() * 6)];
         }
         update(roadLeft, laneWidth) {
             this.x = roadLeft + laneWidth * this.lane + laneWidth / 2;
-            this.y += this.speed;
-            if (this.y > c2.height + 100) this.reset();
+            this.y += this.baseSpeed - playerCar.speed;
+            this.progress += this.baseSpeed;
+            if (this.y > c2.height + 150 || this.y < -400) this.reset();
         }
         draw() {
             ctx2.save();
             ctx2.translate(this.x, this.y);
             ctx2.rotate(Math.PI / 2);
-            // soft shadow
             ctx2.fillStyle = 'rgba(0,0,0,0.25)';
-            ctx2.fillRect(-26, -12, 52, 30);
+            ctx2.fillRect(-30, -13, 60, 34);
             ctx2.fillStyle = this.color;
-            ctx2.fillRect(-26, -14, 52, 28);
+            ctx2.fillRect(-30, -16, 60, 32);
             ctx2.fillStyle = 'rgba(255,255,255,0.12)';
-            ctx2.fillRect(-26, -14, 52, 8);
+            ctx2.fillRect(-30, -16, 60, 9);
             ctx2.fillStyle = '#0a1410';
-            ctx2.fillRect(-7, -11, 12, 22);
-            // taillights
+            ctx2.fillRect(-8, -13, 14, 26);
             ctx2.fillStyle = '#ff5a3c';
-            ctx2.fillRect(-24, -13, 4, 6);
-            ctx2.fillRect(-24, 7, 4, 6);
+            ctx2.fillRect(-28, -15, 5, 7);
+            ctx2.fillRect(-28, 8, 5, 7);
             ctx2.restore();
         }
     }
 
     let traffic = [];
+    let tokens = [];
+    let tokenCount = 0;
+    class RoadToken {
+        constructor() { this.reset(); }
+        reset() {
+            this.lane = Math.floor(Math.random() * 6);
+            this.y = -200 - Math.random() * 1400;
+            this.taken = false;
+            this.spin = 0;
+        }
+        update(roadLeft, laneWidth) {
+            this.x = roadLeft + laneWidth * this.lane + laneWidth / 2;
+            this.y += 2.2 - playerCar.speed;
+            this.spin += 0.12;
+            if (this.y > c2.height + 150 || this.y < -1600) this.reset();
+        }
+        draw() {
+            if (this.taken) return;
+            ctx2.save();
+            ctx2.translate(this.x, this.y);
+            ctx2.scale(Math.cos(this.spin), 1);
+            ctx2.beginPath();
+            ctx2.fillStyle = '#dfb15b';
+            for (let i = 0; i < 5; i++) {
+                const a = -Math.PI / 2 + i * (Math.PI * 2 / 5);
+                const a2 = a + Math.PI / 5;
+                ctx2.lineTo(Math.cos(a) * 12, Math.sin(a) * 12);
+                ctx2.lineTo(Math.cos(a2) * 5, Math.sin(a2) * 5);
+            }
+            ctx2.closePath(); ctx2.fill();
+            ctx2.strokeStyle = '#fff4c9'; ctx2.lineWidth = 1.5; ctx2.stroke();
+            ctx2.restore();
+        }
+    }
     let roadOffset = 0;
+
+    let raceEngineOsc = null, raceEngineGain = null;
+    function ensureRaceEngine() {
+        if (raceEngineOsc) return;
+        const ctx = ensureAudio();
+        raceEngineOsc = ctx.createOscillator();
+        raceEngineGain = ctx.createGain();
+        raceEngineOsc.type = 'sawtooth';
+        raceEngineOsc.frequency.value = 55;
+        raceEngineGain.gain.value = 0;
+        raceEngineOsc.connect(raceEngineGain);
+        raceEngineGain.connect(ctx.destination);
+        raceEngineOsc.start();
+    }
+    function stopRaceEngine() {
+        if (raceEngineGain) raceEngineGain.gain.value = 0;
+    }
 
     function resetPlayerCar() {
         playerCar.x = c2.width / 2;
         playerCar.y = c2.height - 120;
         playerCar.angle = -Math.PI / 2;
         playerCar.speed = 0;
-        traffic = Array.from({ length: 5 }, () => new TrafficCar());
+        traffic = Array.from({ length: 6 }, () => new TrafficCar());
+        tokens = Array.from({ length: 8 }, () => new RoadToken());
+        tokenCount = 0;
+        document.getElementById('hud-tokens').textContent = '0';
         distanceScore = 0;
         hitCount = 0;
         gameOverActive = false;
@@ -1854,14 +1925,15 @@
 
             // Complex, winding road: center sweeps left/right on two overlapping
             // sine waves keyed to distance travelled, so every run's curve is different.
-            const roadWidth = Math.min(680, c2.width * 0.56);
-            const curveAmp = Math.min(170, c2.width * 0.15);
+            const roadWidth = Math.min(920, c2.width * 0.72);
+            const curveAmp = Math.min(110, c2.width * 0.09) * raceDiffMul;
             const roadCenterX = c2.width / 2
                 + Math.sin(distanceScore * 0.011) * curveAmp
-                + Math.sin(distanceScore * 0.0037 + 1.4) * curveAmp * 0.45;
+                + Math.sin(distanceScore * 0.0037 + 1.4) * curveAmp * 0.45
+                + Math.sin(distanceScore * 0.021 + 0.6) * curveAmp * 0.2;
             const roadLeft = roadCenterX - roadWidth / 2;
             const roadRight = roadCenterX + roadWidth / 2;
-            const laneCount = 4;
+            const laneCount = 6;
             const laneWidth = roadWidth / laneCount;
 
             // Roadside trees for a sense of speed (parallax)
@@ -1905,11 +1977,9 @@
             if (keys['ArrowUp'] || keys['w'] || keys['W']) playerCar.speed += playerCar.accel;
             if (keys['ArrowDown'] || keys['s'] || keys['S']) playerCar.speed -= playerCar.accel * 0.6;
 
-            if (Math.abs(playerCar.speed) > 0.1) {
-                const dir = playerCar.speed > 0 ? 1 : -1;
-                if (keys['ArrowLeft'] || keys['a'] || keys['A']) playerCar.angle -= playerCar.steerAngle * dir;
-                if (keys['ArrowRight'] || keys['d'] || keys['D']) playerCar.angle += playerCar.steerAngle * dir;
-            }
+            const dir = playerCar.speed >= 0 ? 1 : -1;
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) playerCar.angle -= playerCar.steerAngle * dir;
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) playerCar.angle += playerCar.steerAngle * dir;
 
             playerCar.speed *= playerCar.friction;
 
@@ -1917,15 +1987,22 @@
             let nextY = playerCar.y + Math.sin(playerCar.angle) * playerCar.speed;
 
             const carHalfWidth = CAR_HALF_WIDTH;
+            const now2 = Date.now();
             if (nextX - carHalfWidth < roadLeft) {
                 nextX = roadLeft + carHalfWidth;
-                if (Math.abs(playerCar.speed) > 1.5) spawnSparks(roadLeft, playerCar.y);
-                playerCar.speed *= 0.5;
+                if (now2 - lastWallHitAt > 300) {
+                    lastWallHitAt = now2;
+                    if (Math.abs(playerCar.speed) > 1.5) spawnSparks(roadLeft, playerCar.y);
+                    playerCar.speed *= 0.8;
+                }
             }
             if (nextX + carHalfWidth > roadRight) {
                 nextX = roadRight - carHalfWidth;
-                if (Math.abs(playerCar.speed) > 1.5) spawnSparks(roadRight, playerCar.y);
-                playerCar.speed *= 0.5;
+                if (now2 - lastWallHitAt > 300) {
+                    lastWallHitAt = now2;
+                    if (Math.abs(playerCar.speed) > 1.5) spawnSparks(roadRight, playerCar.y);
+                    playerCar.speed *= 0.8;
+                }
             }
 
             playerCar.x = nextX;
@@ -1942,7 +2019,7 @@
             // gates the feedback burst so touching multiple cars in one clump can't spam it.
             traffic.forEach(npc => {
                 npc.update(roadLeft, laneWidth); npc.draw();
-                if (Math.hypot(npc.x - playerCar.x, npc.y - playerCar.y) < 34) {
+                if (Math.hypot(npc.x - playerCar.x, npc.y - playerCar.y) < 40) {
                     playerCar.speed = -2;
                     const now = Date.now();
                     if (now - lastHitAt > HIT_COOLDOWN) {
@@ -1963,6 +2040,40 @@
                     }
                     npc.reset();
                 }
+            });
+
+            tokens.forEach(t => {
+                t.update(roadLeft, laneWidth); t.draw();
+                if (!t.taken && Math.hypot(t.x - playerCar.x, t.y - playerCar.y) < 30) {
+                    t.taken = true;
+                    tokenCount++;
+                    document.getElementById('hud-tokens').textContent = tokenCount;
+                    const chip = document.getElementById('chip-tokens');
+                    chip.classList.remove('pulse'); void chip.offsetWidth; chip.classList.add('pulse');
+                    sfx.chirp();
+                    t.reset();
+                }
+            });
+
+            const ahead = traffic.filter(n => n.progress > distanceScore).length;
+            document.getElementById('hud-position').textContent = (ahead + 1) + '/' + (traffic.length + 1);
+
+            if (soundOn) {
+                ensureRaceEngine();
+                raceEngineGain.gain.value = 0.02 + Math.min(0.05, Math.abs(playerCar.speed) * 0.012);
+                raceEngineOsc.frequency.value = 55 + Math.abs(playerCar.speed) * 22;
+            } else if (raceEngineGain) {
+                raceEngineGain.gain.value = 0;
+            }
+            if (playerCar.speed > 3) {
+                speedLines.push({ x: playerCar.x + (Math.random() - 0.5) * 50, y: playerCar.y + 40, life: 1 });
+            }
+            speedLines.forEach(l => { l.y += 22; l.life -= 0.08; });
+            speedLines = speedLines.filter(l => l.life > 0);
+            speedLines.forEach(l => {
+                ctx2.strokeStyle = `rgba(255,255,255,${l.life * 0.35})`;
+                ctx2.lineWidth = 2;
+                ctx2.beginPath(); ctx2.moveTo(l.x, l.y); ctx2.lineTo(l.x, l.y - 26); ctx2.stroke();
             });
 
             // Spark particles
@@ -1987,24 +2098,24 @@
             ctx2.rotate(playerCar.angle);
 
             if (playerCar.speed > 1) {
-                const glow = ctx2.createRadialGradient(32, 0, 3, 32, 0, 36);
+                const glow = ctx2.createRadialGradient(38, 0, 4, 38, 0, 42);
                 glow.addColorStop(0, 'rgba(255,244,200,0.35)');
                 glow.addColorStop(1, 'rgba(255,244,200,0)');
                 ctx2.fillStyle = glow;
-                ctx2.beginPath(); ctx2.arc(32, 0, 36, 0, Math.PI * 2); ctx2.fill();
+                ctx2.beginPath(); ctx2.arc(38, 0, 42, 0, Math.PI * 2); ctx2.fill();
             }
 
             ctx2.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx2.fillRect(-26, -12, 52, 30);
+            ctx2.fillRect(-32, -14, 64, 36);
             ctx2.fillStyle = '#dfb15b';
-            ctx2.fillRect(-26, -14, 52, 28);
+            ctx2.fillRect(-32, -17, 64, 34);
             ctx2.fillStyle = 'rgba(255,255,255,0.18)';
-            ctx2.fillRect(-26, -14, 52, 8);
+            ctx2.fillRect(-32, -17, 64, 10);
             ctx2.fillStyle = '#0a1410';
-            ctx2.fillRect(3, -10, 12, 20);
+            ctx2.fillRect(4, -12, 15, 24);
             ctx2.fillStyle = '#fff';
-            ctx2.fillRect(23, -13, 4, 6);
-            ctx2.fillRect(23, 7, 4, 6);
+            ctx2.fillRect(28, -16, 5, 7);
+            ctx2.fillRect(28, 9, 5, 7);
             ctx2.restore();
 
             ctx2.restore();
@@ -2051,10 +2162,14 @@
         }
     });
 
+    let micStream = null;
+    let micRAF = null;
     async function toggleMic() {
         const btn = document.getElementById('mic-btn');
+        if (micStream) { stopMic(); return; }
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            micStream = stream;
             const ctx = ensureAudio();
             const analyser = ctx.createAnalyser();
             const source = ctx.createMediaStreamSource(stream);
@@ -2063,20 +2178,31 @@
             const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
             btn.classList.add('listening');
-            btn.innerHTML = '<span class="mic-dot"></span> Listening…';
+            btn.innerHTML = '<span class="mic-dot"></span> Listening… (click to stop)';
+            btn.blur();
 
             function readMic() {
+                if (!micStream) return;
                 analyser.getByteFrequencyData(dataArray);
                 let sum = 0;
                 for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
                 micVolume = sum / dataArray.length;
-                requestAnimationFrame(readMic);
+                micRAF = requestAnimationFrame(readMic);
             }
             readMic();
         } catch (err) {
             btn.innerHTML = '<span class="mic-dot"></span> Mic blocked — hold Space';
             setTimeout(() => { btn.innerHTML = '<span class="mic-dot"></span> Enable Mic'; }, 2400);
         }
+    }
+
+    function stopMic() {
+        if (micRAF) cancelAnimationFrame(micRAF);
+        micRAF = null;
+        if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+        micVolume = 0;
+        const btn = document.getElementById('mic-btn');
+        if (btn) { btn.classList.remove('listening'); btn.innerHTML = '<span class="mic-dot"></span> Enable Mic'; }
     }
 
     class Balloon {
