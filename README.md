@@ -1,1 +1,1 @@
-# -Interaction-Gallery
+# Interaction-Gallery
