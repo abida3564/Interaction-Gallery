@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interaction Gallery — Three Studies in Response By Team 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
+<title>Interaction Gallery — Game Hub</title>
+<!-- Live vote log host (cPanel PHP → logs/logs.txt). GitHub Pages reads/writes via this URL. -->
+<script>
+  window.INTERACTION_VOTE_API = 'https://river.soundvision.app/logs/vote-api.php';
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -39,9 +43,11 @@
         background-color: var(--bg-dark);
         color: var(--text-light);
         font-family: 'Inter', 'Segoe UI', sans-serif;
+        height: 100dvh;
         height: 100vh;
         overflow: hidden;
         position: relative;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
     ::selection { background: var(--accent-gold-soft); }
@@ -90,8 +96,8 @@
 
     /* --- HOME GALLERY (professional hub) --- */
     #home-view {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         position: relative;
@@ -189,31 +195,26 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 16px;
-        padding: 10px 16px 24px;
+        gap: 14px;
+        padding: 8px 16px max(20px, env(safe-area-inset-bottom));
         min-height: 0;
         overflow-y: auto;
+        overflow-x: hidden;
         position: relative;
         z-index: 2;
     }
 
-    /* Detail panel drops down under the highlighted center card */
-    .detail-dropdown {
-        width: min(540px, 92vw);
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transform: translateY(-8px);
-        transition: max-height .45s var(--ease-out), opacity .35s var(--ease-out), transform .45s var(--ease-out);
-        flex-shrink: 0;
-        position: relative;
-    }
+    /* Detail panel retired — tall gallery cards already carry full info + Play CTA */
+    .detail-dropdown,
     .detail-dropdown.open {
-        max-height: 300px;
-        opacity: 1;
-        transform: translateY(0);
-        overflow: visible;
-        padding-top: 10px;
+        display: none !important;
+        max-height: 0 !important;
+        opacity: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        pointer-events: none !important;
+        margin: 0 !important;
+        border: none !important;
     }
     .detail-dropdown.open::before {
         content: '';
@@ -321,19 +322,22 @@
     @media (max-width: 820px) {
         .hub-meta .kbd-hint { display: none; }
         .hub-sub { display: none; }
-        .card-slot, .gallery-card { width: min(78vw, 300px); height: 200px; }
-        .card-slot { margin-left: calc(min(78vw, 300px) / -2); }
-        .cards-container { height: 200px; }
-        .detail-dropdown.open { max-height: 300px; }
+        .card-slot, .gallery-card { width: min(86vw, 340px); height: min(64vh, 460px); }
+        .card-slot { margin-left: calc(min(86vw, 340px) / -2); }
+        .cards-container { height: min(68vh, 480px); }
+        .detail-dropdown, .detail-dropdown.open { display: none !important; max-height: 0 !important; opacity: 0 !important; padding: 0 !important; }
+        .gallery-card .card-thumb { height: 30%; min-height: 100px; }
+        .gallery-card .card-desc { -webkit-line-clamp: 2; }
     }
 
     .carousel-area {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 20px;
+        gap: 16px;
         width: 100%;
-        flex-shrink: 0;
+        flex: 1 1 auto;
+        min-height: 0;
         position: relative;
         z-index: 2;
     }
@@ -341,7 +345,7 @@
     .cards-container {
         position: relative;
         width: min(920px, 100%);
-        height: 250px;
+        height: 460px;
         margin: 0 auto;
         perspective: 1400px;
         perspective-origin: 50% 45%;
@@ -361,12 +365,14 @@
         top: 10px;
         left: 50%;
         width: 320px;
-        height: 230px;
+        height: 440px;
         margin-left: -160px;
         transform-style: preserve-3d;
         animation: slot-enter 0.75s var(--ease-out) backwards;
         transition: z-index 0s linear .2s;
+        pointer-events: none;
     }
+    .card-slot .gallery-card { pointer-events: auto; }
     @keyframes slot-enter {
         from { opacity: 0; transform: translateY(28px); }
         to { opacity: 1; transform: translateY(0); }
@@ -377,11 +383,11 @@
 
     .gallery-card {
         width: 320px;
-        height: 230px;
+        height: 440px;
         background: linear-gradient(155deg, var(--bg-card-hi), var(--bg-card) 60%);
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 22px;
+        border-radius: 14px;
+        padding: 14px 14px 16px;
         position: relative;
         cursor: pointer;
         transform-origin: center center;
@@ -389,9 +395,432 @@
         overflow: hidden;
         backface-visibility: hidden;
         flex-shrink: 0;
-        -webkit-box-reflect: below 12px linear-gradient(transparent 76%, rgba(255,255,255,0.07));
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
         will-change: transform, opacity, filter;
     }
+    .gallery-card .card-thumb {
+        width: 100%;
+        height: 120px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+        position: relative;
+    }
+    .gallery-card .card-thumb canvas { width: 100%; height: 100%; display: block; }
+    .gallery-card .card-num {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 1.5px;
+        color: var(--accent-gold);
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+    .gallery-card .card-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-light);
+        line-height: 1.15;
+    }
+    .gallery-card .card-tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        color: var(--text-faint);
+        letter-spacing: 0.8px;
+    }
+    .gallery-card .card-lesson {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #9fd4b8;
+        line-height: 1.3;
+        margin-top: 2px;
+    }
+    .gallery-card .card-desc {
+        font-size: 0.74rem;
+        color: var(--text-dim);
+        line-height: 1.35;
+        flex: 1;
+        min-height: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .gallery-card .card-votes {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 3;
+    }
+    .gallery-card .vote-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-height: 32px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(0,0,0,0.28);
+        color: var(--text-dim);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+        pointer-events: auto;
+    }
+    .gallery-card .vote-btn:hover {
+        border-color: rgba(223,177,91,0.45);
+        color: var(--text-light);
+        transform: translateY(-1px);
+    }
+    .gallery-card .vote-btn.active {
+        background: rgba(223,177,91,0.18);
+        border-color: rgba(223,177,91,0.55);
+        color: var(--accent-gold);
+    }
+    .gallery-card .vote-btn .v-count { min-width: 0.9em; }
+    .gallery-card .card-rating-mini {
+        margin-left: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--text-faint);
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+    }
+    .gallery-card .card-rating-mini b {
+        color: var(--accent-gold);
+        font-weight: 600;
+    }
+    .gallery-card .play-badge {
+        position: static;
+        align-self: flex-start;
+        margin-top: 4px;
+        opacity: 0.55;
+        transform: none;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #0e1712;
+        background: var(--accent-gold);
+        border-radius: 999px;
+        padding: 8px 16px;
+    }
+
+    /* In-game 1–5 star rating panel */
+    .game-rate-panel {
+        position: fixed;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        z-index: 40;
+        font-family: 'JetBrains Mono', monospace;
+        display: none;
+    }
+    .game-rate-panel.show { display: block; }
+    .game-rate-toggle {
+        min-height: 40px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(223,177,91,0.4);
+        background: rgba(9,15,12,0.9);
+        color: var(--accent-gold);
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .game-rate-panel.open .game-rate-toggle { opacity: 0; pointer-events: none; height: 0; padding: 0; border: 0; overflow: hidden; }
+    .game-rate-body {
+        display: none;
+        width: min(240px, calc(100vw - 28px));
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(9,15,12,0.94);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    }
+    .game-rate-panel.open .game-rate-body { display: block; animation: home-fade-in 0.25s var(--ease-out); }
+    .game-rate-head {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.62rem;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+    .game-rate-close {
+        border: 0; background: transparent; color: var(--text-dim);
+        cursor: pointer; font-size: 1rem; line-height: 1; padding: 2px 4px;
+    }
+    .star-row { display: flex; gap: 4px; justify-content: center; margin: 6px 0 10px; }
+    .star-btn {
+        width: 36px; height: 36px;
+        border: 0; border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        color: #5d7568;
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: color 0.15s, transform 0.15s, background 0.15s;
+    }
+    .star-btn:hover, .star-btn.on {
+        color: var(--accent-gold);
+        background: rgba(223,177,91,0.12);
+        transform: translateY(-1px);
+    }
+    .game-rate-world {
+        font-size: 0.62rem;
+        color: var(--text-faint);
+        line-height: 1.4;
+        text-align: center;
+    }
+    .game-rate-world b { color: var(--accent-gold); font-weight: 600; }
+    .game-rate-thanks {
+        display: none;
+        text-align: center;
+        color: #9fd4b8;
+        font-size: 0.7rem;
+        margin-top: 6px;
+    }
+    .game-rate-panel.thanks .game-rate-thanks { display: block; }
+    .vote-sync-dot {
+        display: inline-block;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--text-faint);
+        margin-right: 4px;
+        vertical-align: middle;
+    }
+    .vote-sync-dot.live { background: #3ecf8e; box-shadow: 0 0 6px rgba(62,207,142,0.6); }
+    .vote-sync-dot.local { background: var(--accent-coral); }
+
+    /* Public worldwide scoreboard */
+    .hub-board-btn {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        background: rgba(223,177,91,0.1);
+        border: 1px solid rgba(223,177,91,0.35);
+        border-radius: 999px;
+        padding: 7px 14px;
+        cursor: pointer;
+        min-height: 36px;
+        transition: background .2s, transform .15s;
+    }
+    .hub-board-btn:hover { background: rgba(223,177,91,0.2); transform: translateY(-1px); }
+    .card-top-scorer {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        color: var(--text-faint);
+        letter-spacing: 0.3px;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-top-scorer b { color: var(--accent-gold); font-weight: 600; }
+    .scoreboard-modal {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
+        background: rgba(4, 10, 8, 0.72);
+        backdrop-filter: blur(8px);
+    }
+    .scoreboard-modal.open { display: flex; }
+    .scoreboard-panel {
+        width: min(440px, 100%);
+        max-height: min(88dvh, 640px);
+        overflow: hidden;
+        display: flex; flex-direction: column;
+        background: linear-gradient(165deg, #15241c, #0e1712 70%);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    }
+    .scoreboard-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .scoreboard-head h2 {
+        font-family: 'Fraunces', serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-light);
+    }
+    .scoreboard-head .sub {
+        display: block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.58rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-top: 3px;
+    }
+    .scoreboard-close {
+        border: 0; background: transparent; color: var(--text-dim);
+        font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 4px 8px;
+    }
+    .scoreboard-tabs {
+        display: flex; gap: 6px; padding: 10px 12px;
+        overflow-x: auto; flex-shrink: 0;
+    }
+    .scoreboard-tabs button {
+        flex: 0 0 auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.03);
+        color: var(--text-faint);
+        border-radius: 999px;
+        padding: 7px 11px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .scoreboard-tabs button.active {
+        color: #0e1712;
+        background: var(--accent-gold);
+        border-color: var(--accent-gold);
+    }
+    .scoreboard-list {
+        flex: 1; overflow-y: auto; padding: 4px 12px 16px;
+        min-height: 180px;
+    }
+    .board-row {
+        display: grid;
+        grid-template-columns: 36px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 10px;
+        border-radius: 10px;
+        margin-bottom: 4px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid transparent;
+    }
+    .board-row.me {
+        border-color: rgba(223,177,91,0.35);
+        background: rgba(223,177,91,0.08);
+    }
+    .board-row.top1 { background: linear-gradient(90deg, rgba(223,177,91,0.18), rgba(255,255,255,0.02)); }
+    .board-row.top2 { background: linear-gradient(90deg, rgba(180,200,210,0.12), rgba(255,255,255,0.02)); }
+    .board-row.top3 { background: linear-gradient(90deg, rgba(200,140,90,0.12), rgba(255,255,255,0.02)); }
+    .board-rank {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--accent-gold);
+        text-align: center;
+    }
+    .board-name {
+        font-family: 'Fraunces', serif;
+        font-size: 0.95rem;
+        color: var(--text-light);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .board-score {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+    }
+    .board-empty {
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.85rem;
+        padding: 36px 16px;
+        line-height: 1.5;
+    }
+    .score-submit-modal {
+        position: fixed; inset: 0; z-index: 1210;
+        display: none; align-items: center; justify-content: center;
+        padding: 16px;
+        background: rgba(4, 10, 8, 0.75);
+        backdrop-filter: blur(6px);
+    }
+    .score-submit-modal.open { display: flex; }
+    .score-submit-card {
+        width: min(340px, 100%);
+        background: #13221b;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 16px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .score-submit-card h3 {
+        font-family: 'Fraunces', serif;
+        font-size: 1.15rem;
+        margin-bottom: 4px;
+    }
+    .score-submit-card p {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+    .score-submit-card .big-score {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        margin-bottom: 12px;
+    }
+    .score-submit-card input {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.35);
+        color: var(--text-light);
+        padding: 10px 12px;
+        font-size: 1rem;
+        font-family: 'Fraunces', serif;
+        margin-bottom: 12px;
+    }
+    .score-submit-card input:focus {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 1px;
+    }
+    .score-submit-actions {
+        display: flex; gap: 8px;
+    }
+    .score-submit-actions button {
+        flex: 1;
+        min-height: 42px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .score-submit-actions .btn-skip {
+        background: transparent;
+        color: var(--text-dim);
+    }
+    .score-submit-actions .btn-post {
+        background: var(--accent-gold);
+        color: #0e1712;
+        border-color: var(--accent-gold);
+        font-weight: 700;
+    }
+    .gallery-card.active .play-badge,
+    .gallery-card[data-abs="0"] .play-badge {
+        opacity: 1;
+    }
+
     /* Depth states are driven by data-abs (distance from the focused card),
        set from JS, so :hover transitions still work. */
     .gallery-card[data-abs="0"] { opacity: 1; filter: blur(0) saturate(1); }
@@ -407,9 +836,9 @@
 
     .card-thumb {
         width: 100%;
-        height: 88px;
-        border-radius: 8px;
-        margin-bottom: 14px;
+        height: 120px;
+        border-radius: 10px;
+        margin-bottom: 0;
         position: relative;
         overflow: hidden;
     }
@@ -640,22 +1069,6 @@
     .enter-btn .arrow { transition: transform 0.25s var(--ease-out); }
     .enter-btn:hover .arrow { transform: translateX(4px); }
 
-    .enter-btn.ghost {
-        background: transparent;
-        border: 1px solid #cdd8d1;
-        color: #0d1a13;
-    }
-    .enter-btn.ghost:hover {
-        background: rgba(13, 26, 19, 0.06);
-        color: #0d1a13;
-    }
-    .go-btn-row {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
     /* Carousel Navigation Buttons */
     .nav-arrow {
         width: 48px;
@@ -736,9 +1149,11 @@
     /* --- ACTIVE ROOM PLAY VIEW --- */
     .room-screen {
         display: none;
-        width: 100vw;
-        height: 100vh;
-        position: relative;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
     }
 
     #screen-room-1 iframe#waste-room1-iframe {
@@ -750,28 +1165,31 @@
         z-index: 0;
     }
 
-    /* Room 1: don't stack a second header over the game HUD.
-       Only a compact Gallery FAB stays — room title is already inside the game. */
+    /* Always-visible Gallery exit for Save the River (iframe covers play area) */
     #screen-room-1 .top-bar {
         position: absolute;
-        top: auto;
-        bottom: max(14px, env(safe-area-inset-bottom));
+        top: max(10px, env(safe-area-inset-top));
         left: max(10px, env(safe-area-inset-left));
         right: auto;
+        bottom: auto;
         width: auto;
         padding: 0;
-        z-index: 40;
+        z-index: 80;
         pointer-events: none;
     }
     #screen-room-1 .top-bar > div { gap: 0 !important; }
     #screen-room-1 .room-heading { display: none; }
     #screen-room-1 .btn-back {
         pointer-events: all;
-        padding: 10px 14px;
-        font-size: 0.78rem;
-        background: rgba(9, 15, 12, 0.82);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+        padding: 12px 16px;
+        min-height: 44px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        background: rgba(9, 15, 12, 0.92);
+        border: 1.5px solid var(--accent-gold);
+        color: var(--accent-gold);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.55);
     }
 
     .room-screen.active {
@@ -789,9 +1207,11 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        padding: 20px 24px;
+        padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 12px max(14px, env(safe-area-inset-left));
         z-index: 20;
         pointer-events: none;
+        gap: 8px;
+        flex-wrap: wrap;
     }
     .top-bar > * { pointer-events: all; }
 
@@ -842,42 +1262,9 @@
     .btn-back .arrow-l { transition: transform 0.25s ease; }
     .btn-back:hover .arrow-l { transform: translateX(-3px); }
 
-    /* --- Corner EXIT button, present in every room --- */
-    .room-exit-btn {
-        position: absolute;
-        top: max(20px, env(safe-area-inset-top));
-        right: max(24px, env(safe-area-inset-right));
-        z-index: 50;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px 16px;
-        border-radius: 22px;
-        background: rgba(9, 15, 12, 0.82);
-        backdrop-filter: blur(8px);
-        border: 1px solid var(--border);
-        color: var(--text-light);
-        font-weight: 600;
-        font-size: 0.82rem;
-        cursor: pointer;
-        box-shadow: 0 8px 22px rgba(0,0,0,0.4);
-        transition: all 0.25s var(--ease-out);
-    }
-    .room-exit-btn:hover {
-        border-color: var(--accent-gold);
-        color: var(--accent-gold);
-        background: var(--bg-card-hi);
-    }
-
     .top-right-controls {
         display: flex;
         gap: 10px;
-    }
-    /* When the exit button sits inside a room's existing icon row, flow with it
-       instead of using its own fixed corner position. */
-    .top-right-controls .room-exit-btn {
-        position: static;
-        padding: 11px 16px;
     }
 
     .icon-btn {
@@ -990,8 +1377,8 @@
 
     .rules-card {
         position: absolute;
-        bottom: 20px;
-        left: 20px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        left: max(16px, env(safe-area-inset-left));
         background: rgba(9, 15, 12, 0.88);
         backdrop-filter: blur(8px);
         border: 1px solid var(--border);
@@ -999,7 +1386,7 @@
         padding: 16px 20px;
         border-radius: 8px;
         max-width: 320px;
-        z-index: 10;
+        z-index: 22;
         transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
         animation: rules-slide-in 0.5s var(--ease-out) 0.2s backwards;
     }
@@ -1145,7 +1532,7 @@
 
     #screen-room-3 .word-goal {
         position: absolute;
-        top: 14px;
+        top: max(58px, calc(env(safe-area-inset-top) + 48px));
         left: 50%;
         transform: translateX(-50%);
         z-index: 25;
@@ -1224,55 +1611,205 @@
         max-width: 280px;
     }
 
-    /* Room 02: compact HUD and touch-friendly left/right controls */
+    /* Room 02: full-screen steer zones + compact HUD */
     #screen-room-2 .hud-row {
-        right: 20px;
+        top: max(64px, calc(env(safe-area-inset-top) + 52px));
+        left: max(10px, env(safe-area-inset-left));
+        right: max(10px, env(safe-area-inset-right));
         justify-content: center;
+        flex-direction: row;
         flex-wrap: wrap;
+        max-width: none;
+        gap: 6px;
     }
+    #screen-room-2 .hud-chip { min-width: 0; padding: 7px 10px; }
     #screen-room-2 .rules-card {
-        max-width: 300px;
-        bottom: 88px;
+        max-width: min(280px, 42vw);
+        bottom: max(52px, calc(env(safe-area-inset-bottom) + 40px));
+        right: max(10px, env(safe-area-inset-right));
+        left: auto;
     }
     .race-touch-controls {
         position: absolute;
-        left: 50%;
-        bottom: 22px;
-        transform: translateX(-50%);
-        z-index: 18;
+        left: 0;
+        right: 0;
+        top: max(110px, calc(env(safe-area-inset-top) + 96px));
+        bottom: 0;
+        z-index: 8;
         display: flex;
-        gap: 18px;
+        pointer-events: none;
+    }
+    .race-zone {
+        flex: 1;
+        height: 100%;
         pointer-events: auto;
-    }
-    .race-touch-controls button {
-        width: 64px;
-        height: 54px;
-        border: 1px solid rgba(223,177,91,0.6);
-        border-radius: 14px;
-        background: rgba(9,15,12,0.82);
-        color: var(--accent-gold);
-        font-size: 1.6rem;
-        font-weight: 700;
-        cursor: pointer;
         touch-action: none;
-        backdrop-filter: blur(8px);
-        transition: background 160ms ease, border-color 160ms ease;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
     }
-    .race-touch-controls button:active,
-    .race-touch-controls button.pressed {
-        background: rgba(223,177,91,0.28);
-        border-color: var(--accent-gold);
+    .race-zone.pressed {
+        background: linear-gradient(to top, rgba(223,177,91,0.14), transparent 45%);
+    }
+    .race-zone-hint {
+        position: absolute;
+        bottom: max(18px, env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 13;
+        pointer-events: none;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        letter-spacing: 1.2px;
+        color: rgba(223,177,91,0.8);
+        background: rgba(9,15,12,0.75);
+        border: 1px solid rgba(223,177,91,0.35);
+        border-radius: 999px;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .balloon-lift-btn {
+        position: absolute;
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(18px, env(safe-area-inset-bottom));
+        z-index: 18;
+        min-width: 88px;
+        min-height: 52px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1.5px solid rgba(223,177,91,0.65);
+        background: rgba(9,15,12,0.88);
+        color: var(--accent-gold);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        touch-action: none;
+        cursor: pointer;
+    }
+    .balloon-lift-btn.pressed { background: rgba(223,177,91,0.28); }
+
+    #screen-room-4 .hud-row {
+        top: max(68px, calc(env(safe-area-inset-top) + 56px));
+        left: max(10px, env(safe-area-inset-left));
+        right: max(10px, env(safe-area-inset-right));
+        justify-content: center;
+    }
+    #screen-room-4 .gesture-tools,
+    #screen-room-4 .rules-card {
+        bottom: max(16px, env(safe-area-inset-bottom));
+    }
+
+    .gallery-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    /* Soft creator credits — playful but quiet */
+    .hub-credits {
+        margin-top: 4px;
+        padding: 4px 12px max(6px, env(safe-area-inset-bottom));
+        text-align: center;
+        pointer-events: none;
+        user-select: none;
+        animation: credits-soft-glow 4.5s ease-in-out infinite;
+    }
+    .hub-credits-label {
+        display: block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 2.4px;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        opacity: 0.75;
+        margin-bottom: 6px;
+    }
+    .hub-credits-names {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 6px 10px;
+        font-family: 'Fraunces', serif;
+        font-weight: 500;
+        font-size: clamp(0.72rem, 2.4vw, 0.88rem);
+        color: rgba(237, 243, 238, 0.62);
+        letter-spacing: 0.02em;
+    }
+    .hub-credits .credit-sep {
+        color: var(--accent-gold);
+        opacity: 0.35;
+        font-size: 0.7em;
+        animation: credit-sep-pulse 3.2s ease-in-out infinite;
+    }
+    .hub-credits .credit-name {
+        display: inline-flex;
+        white-space: nowrap;
+    }
+    .hub-credits .dance-ch {
+        display: inline-block;
+        will-change: transform, text-shadow, color;
+        animation: credit-letter-dance 2.4s ease-in-out infinite;
+        animation-delay: calc(var(--i, 0) * 0.07s);
+    }
+    .hub-credits .dance-ch.space { width: 0.28em; }
+    @keyframes credit-letter-dance {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+            color: rgba(237, 243, 238, 0.58);
+            text-shadow: 0 0 0 transparent;
+        }
+        35% {
+            transform: translateY(-2px) rotate(-3deg);
+            color: rgba(223, 177, 91, 0.88);
+            text-shadow: 0 0 8px rgba(223, 177, 91, 0.35);
+        }
+        65% {
+            transform: translateY(1px) rotate(2deg);
+            color: rgba(237, 243, 238, 0.72);
+            text-shadow: 0 0 4px rgba(223, 177, 91, 0.18);
+        }
+    }
+    @keyframes credits-soft-glow {
+        0%, 100% { filter: drop-shadow(0 0 0 transparent); opacity: 0.92; }
+        50% { filter: drop-shadow(0 0 10px rgba(223, 177, 91, 0.12)); opacity: 1; }
+    }
+    @keyframes credit-sep-pulse {
+        0%, 100% { opacity: 0.28; transform: scale(1); }
+        50% { opacity: 0.55; transform: scale(1.15); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .hub-credits,
+        .hub-credits .credit-sep,
+        .hub-credits .dance-ch {
+            animation: none !important;
+            filter: none !important;
+            transform: none !important;
+            text-shadow: none !important;
+        }
     }
 
     /* HUD chips (score / speed / combo) */
     .hud-row {
         position: absolute;
-        top: 88px;
-        left: 20px;
+        top: max(72px, calc(env(safe-area-inset-top) + 58px));
+        left: max(12px, env(safe-area-inset-left));
+        right: max(12px, env(safe-area-inset-right));
         display: flex;
-        gap: 10px;
+        gap: 8px;
         z-index: 10;
+        flex-wrap: wrap;
+        max-width: calc(100% - 24px);
+        pointer-events: none;
     }
+    .hud-row .hud-chip { pointer-events: auto; }
     .hud-chip {
         background: rgba(9, 15, 12, 0.88);
         backdrop-filter: blur(8px);
@@ -1351,99 +1888,91 @@
     canvas { display: block; width: 100%; height: 100%; }
 
     @media (max-width: 720px) {
-        /* Active card fills ~78vw with neighbor edges peeking at the sides */
-        .gallery-card { width: min(78vw, 300px); height: 200px; }
-        .card-slot {
-            width: min(78vw, 300px);
-            height: 200px;
-            margin-left: calc(min(78vw, 300px) / -2);
+        .gallery-card, .card-slot {
+            width: min(88vw, 340px);
+            height: min(62vh, 460px);
         }
-        .cards-container { height: 200px; }
-        .detail-popup { padding: 20px; }
-        .gallery-body { gap: 16px; }
-        .nav-arrow { width: 38px; height: 38px; font-size: 1.1rem; }
-        header { padding: 22px 24px; }
-        header .sub { display: none; }
+        .card-slot { margin-left: calc(min(88vw, 340px) / -2); }
+        .cards-container { height: min(66vh, 480px); }
+        .game-rate-panel { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); }
+        .star-btn { width: 32px; height: 32px; font-size: 1.1rem; }
+        .detail-dropdown, .detail-dropdown.open { display: none !important; }
+        .gallery-body { gap: 10px; padding: 6px 10px 14px; }
+        .nav-arrow { width: 36px; height: 36px; font-size: 1.05rem; }
+        .hub-header { padding: 12px 14px 4px; }
+        .hub-header h1, #home-view h1 { font-size: 1.45rem; }
         .kbd-hint { display: none; }
-        .settings-panel { width: 200px; }
+        .carousel-dots { padding-bottom: 0; }
+        .hub-credits { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+        .hub-credits-names { gap: 4px 8px; font-size: 0.7rem; }
 
-        /* Shared room chrome: keep the play area visible on phones */
-        .top-bar { padding: 10px 12px; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .btn-back { padding: 8px 14px; font-size: 0.78rem; }
-        .room-exit-btn { padding: 8px 14px; font-size: 0.78rem; top: 12px; right: 12px; }
-        .room-heading { padding: 5px 10px; }
-        .room-heading .eyebrow { font-size: 0.56rem; }
-        .room-heading .title { font-size: 0.88rem; }
-        .mic-btn { padding: 8px 14px; font-size: 0.76rem; }
-        .icon-btn { width: 36px; height: 36px; }
-        .hud-row { top: 68px; left: 10px; right: 10px; gap: 6px; flex-wrap: wrap; }
-        .hud-chip { padding: 6px 10px; min-width: 62px; }
-        .hud-chip .hud-value { font-size: 0.95rem; }
-        .settings-panel { top: 68px; right: 10px; }
-        .rules-card {
-            left: 8px; right: 8px; bottom: 8px;
-            max-width: none; padding: 12px 14px;
+        .room-heading { display: none !important; }
+        .top-bar {
+            padding: max(8px, env(safe-area-inset-top)) 10px 8px;
+            flex-wrap: nowrap; gap: 8px; align-items: center;
         }
-        #screen-room-3 .word-goal {
-            top: 58px;
-            left: 10px;
-            right: 10px;
-            transform: none;
-            max-width: none;
-            padding: 10px 12px;
-            gap: 6px;
+        .btn-back { padding: 8px 12px; font-size: 0.76rem; min-height: 40px; }
+        .mic-btn { padding: 8px 12px; font-size: 0.72rem; min-height: 40px; }
+        .icon-btn { width: 36px; height: 36px; flex-shrink: 0; }
+        .top-right-controls { gap: 6px; flex-wrap: nowrap; }
+
+        .hud-row {
+            top: max(52px, calc(env(safe-area-inset-top) + 44px));
+            left: 8px; right: 8px; gap: 5px; flex-wrap: wrap;
+            justify-content: flex-start; max-width: none;
         }
-        #screen-room-3 .word-slot { width: 28px; height: 32px; font-size: 0.95rem; }
-        #screen-room-3 .hud-row {
-            top: auto;
-            bottom: 10px;
-            left: 8px;
-            right: auto;
-            flex-direction: row;
-            flex-wrap: wrap;
-            max-width: calc(100vw - 120px);
-            gap: 6px;
-        }
-        #screen-room-3 .hud-chip { width: auto; min-width: 58px; }
-        #screen-room-3 .rules-card {
-            left: auto;
-            right: 8px;
-            bottom: 8px;
-            max-width: 200px;
-            padding: 10px 12px;
-        }
+        .hud-chip { padding: 5px 8px; min-width: 0; flex: 1 1 auto; }
+        .hud-chip .hud-label { font-size: 0.52rem; letter-spacing: 1px; }
+        .hud-chip .hud-value { font-size: 0.9rem; }
+        .rules-card { display: none !important; }
+
+        #screen-room-1 .top-bar { display: none !important; }
+
         #screen-room-2 .hud-row {
-            top: 62px;
-            left: 8px;
-            right: 8px;
-            justify-content: center;
+            top: max(52px, calc(env(safe-area-inset-top) + 44px));
+            justify-content: space-between;
         }
-        #screen-room-2 .rules-card {
-            max-width: 210px;
-            bottom: 72px;
+        #screen-room-2 .hud-chip .speed-bar-track { width: 42px; }
+        .race-zone-hint { bottom: max(10px, env(safe-area-inset-bottom)); font-size: 0.52rem; }
+        .race-touch-controls { top: max(108px, calc(env(safe-area-inset-top) + 96px)); }
+
+        #screen-room-3 .word-goal {
+            top: max(52px, calc(env(safe-area-inset-top) + 44px));
+            left: 8px; right: 8px; transform: none; max-width: none;
+            padding: 8px 10px; gap: 5px;
         }
-        .race-touch-controls {
-            bottom: 12px;
-            gap: 12px;
+        #screen-room-3 .word-slot { width: 26px; height: 30px; font-size: 0.9rem; }
+        #screen-room-3 .hud-row {
+            top: max(118px, calc(env(safe-area-inset-top) + 108px));
+            bottom: auto; left: 8px; right: 8px; max-width: none;
+            flex-direction: row; flex-wrap: wrap;
         }
-        .race-touch-controls button {
-            width: 58px;
-            height: 50px;
+        #screen-room-3 .hud-chip { width: auto; }
+        .balloon-lift-btn {
+            min-width: 72px; min-height: 46px; font-size: 0.7rem;
+            bottom: max(12px, env(safe-area-inset-bottom));
+            right: max(10px, env(safe-area-inset-right));
         }
-        #screen-room-4 .rules-card {
-            top: auto;
-            bottom: max(108px, calc(env(safe-area-inset-bottom) + 92px));
-            left: 10px; right: auto;
-            max-width: min(320px, calc(100vw - 20px));
-            max-height: none;
-            overflow: visible;
+
+        #screen-room-4 .hud-row {
+            top: max(52px, calc(env(safe-area-inset-top) + 44px));
+            justify-content: space-between;
         }
-        .rules-card p { font-size: 0.76rem; }
-        .pipeline-strip { margin-top: 8px; padding-top: 8px; gap: 4px; }
-        .pipeline-strip span { font-size: 0.6rem; }
-        .gesture-status { font-size: 0.72rem; }
-        .camera-overlay-card { padding: 22px 18px; gap: 10px; }
-        .camera-overlay-card h3 { font-size: 1.35rem; }
+        #screen-room-4 .gesture-status {
+            top: auto !important;
+            bottom: max(88px, calc(env(safe-area-inset-bottom) + 76px)) !important;
+            left: 50%; right: auto; transform: translateX(-50%);
+            max-width: min(92vw, 340px); text-align: center;
+            padding: 8px 12px; font-size: 0.65rem; z-index: 16;
+        }
+        #screen-room-4 .gesture-tools {
+            bottom: max(12px, env(safe-area-inset-bottom));
+            width: calc(100% - 16px); padding: 8px; gap: 6px;
+        }
+        #screen-room-4 .gesture-capture-banner { top: max(100px, calc(env(safe-area-inset-top) + 90px)); }
+        .custom-gesture-list { max-height: 40px; }
+        .camera-overlay-card { padding: 20px 16px; gap: 10px; }
+        .camera-overlay-card h3 { font-size: 1.25rem; }
     }
 
     /* --- ROOM SLIDER (all rooms browsable via a single slide bar) --- */
@@ -1847,10 +2376,10 @@
             overflow: visible;
         }
         #screen-room-4 .gesture-status {
-            bottom: auto;
-            top: 72px;
-            right: 10px;
-            max-width: 46vw;
+            top: auto !important;
+            bottom: max(132px, calc(env(safe-area-inset-bottom) + 120px)) !important;
+            left: 50%; right: auto; transform: translateX(-50%);
+            max-width: min(92vw, 340px);
         }
         .custom-gesture-list { max-height: 56px; }
     }
@@ -1862,23 +2391,83 @@
 <div id="transition-veil"></div>
 <div id="countdown-overlay"><div id="countdown-text"></div></div>
 
+<!-- Shared in-game star rating (shown while a room is active) -->
+<div class="game-rate-panel" id="game-rate-panel" aria-label="Rate this game">
+    <button type="button" class="game-rate-toggle" id="game-rate-toggle" onclick="toggleRatePanel(true)">★ Rate</button>
+    <div class="game-rate-body">
+        <div class="game-rate-head">
+            <span>Rate this game</span>
+            <button type="button" class="game-rate-close" onclick="toggleRatePanel(false)" aria-label="Close">×</button>
+        </div>
+        <div class="star-row" id="star-row" role="group" aria-label="1 to 5 stars">
+            <button type="button" class="star-btn" data-star="1" onclick="castRating(1)" aria-label="1 star">★</button>
+            <button type="button" class="star-btn" data-star="2" onclick="castRating(2)" aria-label="2 stars">★</button>
+            <button type="button" class="star-btn" data-star="3" onclick="castRating(3)" aria-label="3 stars">★</button>
+            <button type="button" class="star-btn" data-star="4" onclick="castRating(4)" aria-label="4 stars">★</button>
+            <button type="button" class="star-btn" data-star="5" onclick="castRating(5)" aria-label="5 stars">★</button>
+        </div>
+        <div class="game-rate-world" id="game-rate-world">
+            <span class="vote-sync-dot" id="vote-sync-dot"></span>
+            Worldwide · loading…
+        </div>
+        <div class="game-rate-thanks" id="game-rate-thanks">Thanks — your rating was saved</div>
+    </div>
+</div>
+
+<!-- Worldwide public scoreboard -->
+<div class="scoreboard-modal" id="scoreboard-modal" role="dialog" aria-modal="true" aria-labelledby="scoreboard-title" onclick="if(event.target===this)closeScoreboard()">
+    <div class="scoreboard-panel">
+        <div class="scoreboard-head">
+            <div>
+                <h2 id="scoreboard-title">Top Scorers</h2>
+                <span class="sub" id="scoreboard-sync">Worldwide · live board</span>
+            </div>
+            <button type="button" class="scoreboard-close" onclick="closeScoreboard()" aria-label="Close">×</button>
+        </div>
+        <div class="scoreboard-tabs" id="scoreboard-tabs" role="tablist">
+            <button type="button" class="active" data-room="0" onclick="showBoardRoom(0)">River</button>
+            <button type="button" data-room="1" onclick="showBoardRoom(1)">Highway</button>
+            <button type="button" data-room="2" onclick="showBoardRoom(2)">Balloon</button>
+            <button type="button" data-room="3" onclick="showBoardRoom(3)">Gesture</button>
+        </div>
+        <div class="scoreboard-list" id="scoreboard-list" role="tabpanel"></div>
+    </div>
+</div>
+
+<!-- Post score after a run -->
+<div class="score-submit-modal" id="score-submit-modal" role="dialog" aria-modal="true" aria-labelledby="score-submit-title">
+    <div class="score-submit-card">
+        <h3 id="score-submit-title">Post your score</h3>
+        <p id="score-submit-lead">Join the worldwide leaderboard.</p>
+        <div class="big-score" id="score-submit-value">0</div>
+        <label for="score-name-input" class="sr-only" style="position:absolute;left:-9999px">Player name</label>
+        <input id="score-name-input" type="text" maxlength="16" placeholder="Your name" autocomplete="nickname" />
+        <div class="score-submit-actions">
+            <button type="button" class="btn-skip" onclick="skipScoreSubmit()">Skip</button>
+            <button type="button" class="btn-post" onclick="confirmScoreSubmit()">Post score</button>
+        </div>
+    </div>
+</div>
+
 <!-- ================= HOME VIEW — 3D CAROUSEL GALLERY ================= -->
 <div id="home-view">
     <canvas id="dust-canvas"></canvas>
 
     <header class="hub-header">
         <div class="brand-mark">
-            <div class="eyebrow">Interactive Studies</div>
+            <div class="eyebrow">Game Hub</div>
             <h1>Interaction Gallery</h1>
-            <p class="hub-sub">Four playable rooms exploring input, systems, and response.</p>
+            <p class="hub-sub">Pick a room · Play · Master the interaction.</p>
         </div>
         <div class="hub-meta">
+            <button type="button" class="hub-board-btn" onclick="openScoreboard()">🏆 Scoreboard</button>
             <span class="hub-count"><b id="room-counter-cur">01</b> / 04</span>
             <span class="kbd-hint"><kbd>←</kbd><kbd>→</kbd> browse &nbsp; <kbd>↵</kbd> play</span>
         </div>
     </header>
 
     <div class="gallery-body hub-body">
+        <div class="gallery-label">Select a game</div>
         <div class="carousel-area">
             <button type="button" class="nav-arrow left" onclick="moveCarousel(-1)" aria-label="Previous">‹</button>
 
@@ -1889,6 +2478,16 @@
                         <div class="card-num">Room 01</div>
                         <div class="card-title">Save the River</div>
                         <div class="card-tag">3D · Waste sorting</div>
+                        <div class="card-lesson">Sort waste correctly to protect the river</div>
+                        <p class="card-desc">Sort trash into the right bins before it pollutes the water.</p>
+                        <div class="card-votes" data-room="0" onclick="event.stopPropagation()">
+                            <button type="button" class="vote-btn" data-react="like" aria-label="Like" onclick="castReaction(0,'like',event)">👍 <span class="v-count" data-k="like">0</span></button>
+                            <button type="button" class="vote-btn" data-react="heart" aria-label="Love" onclick="castReaction(0,'heart',event)">❤️ <span class="v-count" data-k="heart">0</span></button>
+                            <button type="button" class="vote-btn" data-react="dislike" aria-label="Dislike" onclick="castReaction(0,'dislike',event)">👎 <span class="v-count" data-k="dislike">0</span></button>
+                            <span class="card-rating-mini" title="Worldwide rating">★ <b data-k="avg">—</b> <span data-k="rc">(0)</span></span>
+                        </div>
+                        <div class="card-top-scorer" data-top="0">👑 Be the first on the board</div>
+                        <span class="play-badge">Play →</span>
                     </div>
                 </div>
                 <div class="card-slot">
@@ -1897,6 +2496,16 @@
                         <div class="card-num">Room 02</div>
                         <div class="card-title">Highway Dodge</div>
                         <div class="card-tag">Left / Right · Survival</div>
+                        <div class="card-lesson">Dodge traffic and collect points</div>
+                        <p class="card-desc">Steer left or right, avoid cars, collect stars.</p>
+                        <div class="card-votes" data-room="1" onclick="event.stopPropagation()">
+                            <button type="button" class="vote-btn" data-react="like" aria-label="Like" onclick="castReaction(1,'like',event)">👍 <span class="v-count" data-k="like">0</span></button>
+                            <button type="button" class="vote-btn" data-react="heart" aria-label="Love" onclick="castReaction(1,'heart',event)">❤️ <span class="v-count" data-k="heart">0</span></button>
+                            <button type="button" class="vote-btn" data-react="dislike" aria-label="Dislike" onclick="castReaction(1,'dislike',event)">👎 <span class="v-count" data-k="dislike">0</span></button>
+                            <span class="card-rating-mini" title="Worldwide rating">★ <b data-k="avg">—</b> <span data-k="rc">(0)</span></span>
+                        </div>
+                        <div class="card-top-scorer" data-top="1">👑 Be the first on the board</div>
+                        <span class="play-badge">Play →</span>
                     </div>
                 </div>
                 <div class="card-slot">
@@ -1905,6 +2514,16 @@
                         <div class="card-num">Room 03</div>
                         <div class="card-title">Balloon Fly</div>
                         <div class="card-tag">Word game · Mic</div>
+                        <div class="card-lesson">Spell the shown word in order</div>
+                        <p class="card-desc">Pop letter balloons in order to spell the word.</p>
+                        <div class="card-votes" data-room="2" onclick="event.stopPropagation()">
+                            <button type="button" class="vote-btn" data-react="like" aria-label="Like" onclick="castReaction(2,'like',event)">👍 <span class="v-count" data-k="like">0</span></button>
+                            <button type="button" class="vote-btn" data-react="heart" aria-label="Love" onclick="castReaction(2,'heart',event)">❤️ <span class="v-count" data-k="heart">0</span></button>
+                            <button type="button" class="vote-btn" data-react="dislike" aria-label="Dislike" onclick="castReaction(2,'dislike',event)">👎 <span class="v-count" data-k="dislike">0</span></button>
+                            <span class="card-rating-mini" title="Worldwide rating">★ <b data-k="avg">—</b> <span data-k="rc">(0)</span></span>
+                        </div>
+                        <div class="card-top-scorer" data-top="2">👑 Be the first on the board</div>
+                        <span class="play-badge">Play →</span>
                     </div>
                 </div>
                 <div class="card-slot">
@@ -1913,6 +2532,16 @@
                         <div class="card-num">Room 04</div>
                         <div class="card-title">Gesture Mirror</div>
                         <div class="card-tag">Camera · Hands</div>
+                        <div class="card-lesson">The system reads a sign and answers in kind</div>
+                        <p class="card-desc">Show a sign — it answers with a matching face.</p>
+                        <div class="card-votes" data-room="3" onclick="event.stopPropagation()">
+                            <button type="button" class="vote-btn" data-react="like" aria-label="Like" onclick="castReaction(3,'like',event)">👍 <span class="v-count" data-k="like">0</span></button>
+                            <button type="button" class="vote-btn" data-react="heart" aria-label="Love" onclick="castReaction(3,'heart',event)">❤️ <span class="v-count" data-k="heart">0</span></button>
+                            <button type="button" class="vote-btn" data-react="dislike" aria-label="Dislike" onclick="castReaction(3,'dislike',event)">👎 <span class="v-count" data-k="dislike">0</span></button>
+                            <span class="card-rating-mini" title="Worldwide rating">★ <b data-k="avg">—</b> <span data-k="rc">(0)</span></span>
+                        </div>
+                        <div class="card-top-scorer" data-top="3">👑 Be the first on the board</div>
+                        <span class="play-badge">Play →</span>
                     </div>
                 </div>
             </div>
@@ -1920,14 +2549,13 @@
             <button type="button" class="nav-arrow right" onclick="moveCarousel(1)" aria-label="Next">›</button>
         </div>
 
-        <!-- Details drop down under the selected (center) card -->
-        <div class="detail-dropdown open" id="detail-dropdown">
+        <!-- Legacy detail panel (hidden) — info lives on each tall gallery card -->
+        <div class="detail-dropdown" id="detail-dropdown" hidden aria-hidden="true">
             <div class="detail-dropdown-inner" id="popup-inner">
-                <div class="popup-meta" id="popup-meta">ROOM 01 · 3D GAME</div>
-                <div class="popup-title" id="popup-title">Save the River</div>
-                <div class="popup-lesson" id="popup-lesson">Sort waste correctly to protect the river</div>
-                <p class="popup-desc" id="popup-desc">A 3D river-cleaning game — sort trash into the right bins before it pollutes the water.</p>
-                <button type="button" class="hub-enter-btn" onclick="enterCurrentRoom(event)">Play this room <span>→</span></button>
+                <div class="popup-meta" id="popup-meta"></div>
+                <div class="popup-title" id="popup-title"></div>
+                <div class="popup-lesson" id="popup-lesson"></div>
+                <p class="popup-desc" id="popup-desc"></p>
             </div>
         </div>
 
@@ -1938,6 +2566,17 @@
             <button type="button" class="c-dot" onclick="selectRoom(3)" aria-label="Room 4">04</button>
         </div>
 
+        <footer class="hub-credits" aria-label="Game creators">
+            <span class="hub-credits-label">Crafted by</span>
+            <div class="hub-credits-names">
+                <span class="credit-name" data-credit="Fahima Abida Chowdhury">Fahima Abida Chowdhury</span>
+                <span class="credit-sep" aria-hidden="true">·</span>
+                <span class="credit-name" data-credit="Yeasmin Kabir Keya">Yeasmin Kabir Keya</span>
+                <span class="credit-sep" aria-hidden="true">·</span>
+                <span class="credit-name" data-credit="Arpa Bhoumik">Arpa Bhoumik</span>
+            </div>
+        </footer>
+
         <input type="range" id="room-slider" min="0" max="3" step="1" value="0" hidden aria-hidden="true">
     </div>
 </div>
@@ -1946,8 +2585,6 @@
 <!-- ================= ROOM 01 PLAY SCREEN ================= -->
 <div id="screen-room-1" class="room-screen">
     <iframe id="waste-room1-iframe" title="Save the River game"></iframe>
-
-    <button type="button" class="room-exit-btn" onclick="showHome()" title="Exit to Gallery">✕ Exit</button>
 
     <div class="top-bar">
         <div style="display:flex; gap:12px; align-items:flex-start;">
@@ -1976,10 +2613,8 @@
                 <div><div class="go-val" id="go-distance">0</div><div class="go-lbl">Points</div></div>
                 <div><div class="go-val" id="go-best">0</div><div class="go-lbl">Best</div></div>
             </div>
-            <div class="go-btn-row">
-                <button class="enter-btn" onclick="restartRoom2()">Try again <span class="arrow">↻</span></button>
-                <button class="enter-btn ghost" onclick="showHome()">Exit <span class="arrow">✕</span></button>
-            </div>
+            <button class="enter-btn" onclick="restartRoom2()">Try again <span class="arrow">↻</span></button>
+            <button class="enter-btn" style="margin-top:10px;background:transparent;border:1px solid #c9a45a;color:#5a3f12;" onclick="offerScoreSubmit(1, pointScore)">🏆 Post to scoreboard</button>
         </div>
     </div>
 
@@ -1996,7 +2631,6 @@
             <button class="icon-btn active-state" id="diff-medium" onclick="setDifficulty('medium')" title="Medium">M</button>
             <button class="icon-btn" id="diff-hard" onclick="setDifficulty('hard')" title="Hard">H</button>
             <button class="icon-btn" id="sound-toggle-2" onclick="toggleSound()" title="Toggle sound">🔊</button>
-            <button type="button" class="room-exit-btn" onclick="showHome()" title="Exit to Gallery">✕ Exit</button>
         </div>
     </div>
 
@@ -2027,19 +2661,20 @@
         </div>
     </div>
 
-    <div class="race-touch-controls" aria-label="Driving controls">
-        <button type="button" id="race-left" aria-label="Move car left">←</button>
-        <button type="button" id="race-right" aria-label="Move car right">→</button>
+    <div class="race-touch-controls" aria-label="Steering zones">
+        <button type="button" class="race-zone" id="race-left" aria-label="Steer left"></button>
+        <button type="button" class="race-zone" id="race-right" aria-label="Steer right"></button>
     </div>
+    <div class="race-zone-hint">Hold left / right side · or swipe</div>
 
     <div class="rules-card collapsed" id="rules-2">
         <div class="rules-head" onclick="toggleRules('rules-2')">
             <h3>Room 02 · How to play</h3>
             <span class="rules-toggle">▾</span>
         </div>
-        <p>Your car drives forward automatically. Use <kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd> to move sideways. Avoid incoming cars and collect big gold stars — values are random (+10 / +20 / +50). Three crashes end the run.</p>
+        <p>Car drives forward automatically. Hold or swipe the <b>left / right half</b> of the screen (or use <kbd>←</kbd><kbd>→</kbd>). Dodge cars, collect stars. Three hits ends the run.</p>
         <div class="pipeline-strip">
-            <span><b>STEER</b> left and right only</span>
+            <span><b>STEER</b> touch left or right side of the road</span>
             <span><b>DODGE</b> avoid every incoming vehicle</span>
             <span><b>COLLECT</b> bigger stars give more points</span>
             <span><b>SURVIVE</b> speed rises as distance increases</span>
@@ -2063,7 +2698,6 @@
         <div class="top-right-controls">
             <button class="icon-btn" id="sound-toggle-3" onclick="toggleSound()" title="Toggle sound">🔊</button>
             <button class="mic-btn" id="mic-btn" onclick="toggleMic()"><span class="mic-dot"></span> Enable Mic</button>
-            <button type="button" class="room-exit-btn" onclick="showHome()" title="Exit to Gallery">✕ Exit</button>
         </div>
     </div>
 
@@ -2100,14 +2734,16 @@
             <h3>Room 03 · How to play</h3>
             <span class="rules-toggle">▾</span>
         </div>
-        <p>The target word is shown at the top. Pop the letter balloons <b>in that order</b>, left to right. Blow into the mic or hold <kbd>Space</kbd> to lift. A wrong pop resets your progress.</p>
+        <p>The target word is shown at the top. Pop letter balloons <b>in that order</b>. Hold <b>Lift</b> or <kbd>Space</kbd> / mic to raise balloons. Wrong pop resets progress.</p>
         <div class="pipeline-strip">
             <span><b>WORD</b> full target word is always visible</span>
             <span><b>ORDER</b> pop matching balloons left to right</span>
-            <span><b>WRONG</b> any false letter resets the word</span>
+            <span><b>LIFT</b> hold Lift button, Space, or blow into mic</span>
             <span><b>BONUS</b> finish a word for a streak bonus</span>
         </div>
     </div>
+
+    <button type="button" class="balloon-lift-btn" id="balloon-lift-btn" aria-label="Hold to lift balloons">Lift</button>
 </div>
 
 
@@ -2132,7 +2768,6 @@
         </div>
         <div class="top-right-controls">
             <button class="mic-btn" id="camera-btn" onclick="toggleCamera()" style="display:none;"><span class="mic-dot"></span> Camera on</button>
-            <button type="button" class="room-exit-btn" onclick="showHome()" title="Exit to Gallery">✕ Exit</button>
         </div>
     </div>
 
@@ -2289,6 +2924,433 @@
         }));
     }
     initDust();
+
+    // Dance letters for gallery credits (subtle gamify)
+    (function initCreditDance() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.querySelectorAll('.hub-credits .credit-name').forEach((el) => {
+            const text = el.getAttribute('data-credit') || el.textContent || '';
+            if (reduce) { el.textContent = text; return; }
+            el.setAttribute('aria-label', text);
+            el.textContent = '';
+            [...text].forEach((ch, i) => {
+                const span = document.createElement('span');
+                span.className = 'dance-ch' + (ch === ' ' ? ' space' : '');
+                span.style.setProperty('--i', i);
+                span.textContent = ch === ' ' ? '\u00a0' : ch;
+                el.appendChild(span);
+            });
+        });
+    })();
+
+    // ==========================================
+    // WORLDWIDE VOTES + SCOREBOARD → logs.txt / scores.txt
+    // ==========================================
+    const VoteLog = (() => {
+        const LS_VISITOR = 'ig_visitor_id';
+        const LS_MINE = 'ig_my_votes';
+        const LS_CACHE = 'ig_vote_cache';
+        const LS_NAME = 'ig_player_name';
+        const LS_BOARDS = 'ig_boards_cache';
+        const emptyRoom = () => ({ like: 0, heart: 0, dislike: 0, ratingAvg: 0, ratingCount: 0 });
+        let stats = { 0: emptyRoom(), 1: emptyRoom(), 2: emptyRoom(), 3: emptyRoom() };
+        let boards = { 0: [], 1: [], 2: [], 3: [] };
+        let backend = 'local';
+        let apiUrl = null;
+
+        function visitorId() {
+            let id = localStorage.getItem(LS_VISITOR);
+            if (!id) {
+                id = 'v_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+                localStorage.setItem(LS_VISITOR, id);
+            }
+            return id;
+        }
+
+        function playerName() {
+            return (localStorage.getItem(LS_NAME) || '').trim();
+        }
+        function setPlayerName(name) {
+            name = String(name || '').trim().slice(0, 16);
+            if (name.length >= 2) localStorage.setItem(LS_NAME, name);
+            return name;
+        }
+
+        function myVotes() {
+            try { return JSON.parse(localStorage.getItem(LS_MINE) || '{}') || {}; }
+            catch { return {}; }
+        }
+        function saveMyVotes(map) {
+            localStorage.setItem(LS_MINE, JSON.stringify(map));
+        }
+
+        function resolveApiCandidates() {
+            const list = [];
+            if (typeof window.INTERACTION_VOTE_API === 'string' && window.INTERACTION_VOTE_API.trim()) {
+                list.push(window.INTERACTION_VOTE_API.trim());
+            }
+            list.push('https://river.soundvision.app/logs/vote-api.php');
+            list.push('logs/vote-api.php');
+            list.push('./logs/vote-api.php');
+            return [...new Set(list)];
+        }
+
+        function mergeBoards(src) {
+            for (let i = 0; i < 4; i++) {
+                const list = src[String(i)] || src[i] || [];
+                boards[i] = Array.isArray(list) ? list.slice(0, 15) : [];
+            }
+            try { localStorage.setItem(LS_BOARDS, JSON.stringify(boards)); } catch (_) {}
+        }
+
+        async function probeApi() {
+            for (const url of resolveApiCandidates()) {
+                try {
+                    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    if (data && data.ok && data.rooms) {
+                        apiUrl = url;
+                        backend = data.backend || 'php-logs';
+                        mergeRooms(data.rooms);
+                        if (data.boards) mergeBoards(data.boards);
+                        persistCache();
+                        return true;
+                    }
+                } catch (_) { /* try next */ }
+            }
+            apiUrl = null;
+            backend = 'local';
+            loadCache();
+            return false;
+        }
+
+        function mergeRooms(rooms) {
+            for (let i = 0; i < 4; i++) {
+                const key = String(i);
+                const src = rooms[key] || rooms[i] || {};
+                stats[i] = {
+                    like: +src.like || 0,
+                    heart: +src.heart || 0,
+                    dislike: +src.dislike || 0,
+                    ratingAvg: +src.ratingAvg || 0,
+                    ratingCount: +src.ratingCount || 0,
+                };
+            }
+        }
+
+        function persistCache() {
+            try { localStorage.setItem(LS_CACHE, JSON.stringify({ stats, backend, t: Date.now() })); }
+            catch (_) {}
+        }
+        function loadCache() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(LS_CACHE) || 'null');
+                if (raw && raw.stats) mergeRooms(raw.stats);
+            } catch (_) {}
+            try {
+                const b = JSON.parse(localStorage.getItem(LS_BOARDS) || 'null');
+                if (b) mergeBoards(b);
+            } catch (_) {}
+            const mine = myVotes();
+            for (let i = 0; i < 4; i++) {
+                const m = mine[i] || mine[String(i)] || {};
+                ['like', 'heart', 'dislike'].forEach((k) => {
+                    if (m[k] && stats[i][k] < 1) stats[i][k] = 1;
+                });
+                if (m.rating >= 1 && m.rating <= 5 && stats[i].ratingCount < 1) {
+                    stats[i].ratingAvg = m.rating;
+                    stats[i].ratingCount = 1;
+                }
+            }
+        }
+
+        async function postVote(room, kind, value) {
+            const body = { room: +room, kind, value: +value, visitor: visitorId() };
+            if (apiUrl) {
+                try {
+                    const res = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(body),
+                        cache: 'no-store'
+                    });
+                    const data = await res.json();
+                    if (data && data.ok && data.rooms) {
+                        backend = data.backend || 'php-logs';
+                        mergeRooms(data.rooms);
+                        if (data.boards) mergeBoards(data.boards);
+                        persistCache();
+                        return { ok: true, live: true };
+                    }
+                } catch (_) { /* fall through to local */ }
+            }
+            backend = 'local';
+            const mine = myVotes();
+            const key = String(room);
+            if (!mine[key]) mine[key] = {};
+            if (kind === 'rating') {
+                const had = mine[key].rating >= 1;
+                mine[key].rating = value;
+                const prev = stats[room];
+                if (!had) {
+                    prev.ratingCount += 1;
+                    prev.ratingAvg = value;
+                } else {
+                    prev.ratingAvg = value;
+                }
+            } else {
+                const was = !!mine[key][kind];
+                const on = value > 0;
+                if (on && !was) stats[room][kind] = (stats[room][kind] || 0) + 1;
+                if (!on && was) stats[room][kind] = Math.max(0, (stats[room][kind] || 0) - 1);
+                mine[key][kind] = on;
+            }
+            saveMyVotes(mine);
+            persistCache();
+            return { ok: true, live: false };
+        }
+
+        async function postScore(room, score, name) {
+            score = Math.max(1, Math.floor(+score || 0));
+            name = setPlayerName(name) || 'Player';
+            const body = { room: +room, kind: 'score', value: score, name, visitor: visitorId() };
+            if (apiUrl) {
+                try {
+                    const res = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(body),
+                        cache: 'no-store'
+                    });
+                    const data = await res.json();
+                    if (data && data.ok) {
+                        backend = data.backend || 'php-logs';
+                        if (data.rooms) mergeRooms(data.rooms);
+                        if (data.boards) mergeBoards(data.boards);
+                        persistCache();
+                        return { ok: true, live: true };
+                    }
+                } catch (_) { /* local */ }
+            }
+            backend = 'local';
+            const list = boards[room] ? boards[room].slice() : [];
+            const existing = list.findIndex((r) => r.name === name);
+            if (existing >= 0) {
+                if (score > list[existing].score) list[existing].score = score;
+            } else {
+                list.push({ name, score, ts: new Date().toISOString() });
+            }
+            list.sort((a, b) => b.score - a.score);
+            boards[room] = list.slice(0, 15).map((r, i) => ({ ...r, rank: i + 1 }));
+            mergeBoards(boards);
+            return { ok: true, live: false };
+        }
+
+        function getRoom(i) { return stats[i] || emptyRoom(); }
+        function getBoard(i) { return boards[i] || boards[String(i)] || []; }
+        function getBackend() { return backend; }
+        function getMine(room) {
+            const mine = myVotes();
+            return mine[String(room)] || mine[room] || {};
+        }
+
+        return {
+            probeApi, postVote, postScore, getRoom, getBoard, getBackend, getMine,
+            visitorId, playerName, setPlayerName
+        };
+    })();
+
+    const ROOM_BOARD_NAMES = ['Save the River', 'Highway Dodge', 'Balloon Fly', 'Gesture Mirror'];
+    let boardViewRoom = 0;
+    let pendingScore = null;
+
+    function renderVoteUI() {
+        document.querySelectorAll('.card-votes').forEach((bar) => {
+            const room = +bar.getAttribute('data-room');
+            const s = VoteLog.getRoom(room);
+            const mine = VoteLog.getMine(room);
+            bar.querySelectorAll('.vote-btn').forEach((btn) => {
+                const k = btn.getAttribute('data-react');
+                const countEl = btn.querySelector('.v-count');
+                if (countEl) countEl.textContent = String(s[k] || 0);
+                btn.classList.toggle('active', !!mine[k]);
+            });
+            const avg = bar.querySelector('[data-k="avg"]');
+            const rc = bar.querySelector('[data-k="rc"]');
+            if (avg) avg.textContent = s.ratingCount ? s.ratingAvg.toFixed(1) : '—';
+            if (rc) rc.textContent = '(' + (s.ratingCount || 0) + ')';
+        });
+
+        document.querySelectorAll('.card-top-scorer').forEach((el) => {
+            const room = +el.getAttribute('data-top');
+            const top = VoteLog.getBoard(room)[0];
+            el.textContent = top
+                ? ('👑 ' + top.name + ' · ' + top.score)
+                : '👑 Be the first on the board';
+        });
+
+        const world = document.getElementById('game-rate-world');
+        const roomIdx = (typeof currentRoomIndex === 'number') ? currentRoomIndex : 0;
+        if (world) {
+            const s = VoteLog.getRoom(roomIdx);
+            const live = VoteLog.getBackend() !== 'local';
+            world.innerHTML =
+                '<span class="vote-sync-dot ' + (live ? 'live' : 'local') + '"></span>' +
+                'Worldwide · ★ <b>' + (s.ratingCount ? s.ratingAvg.toFixed(1) : '—') + '</b> · ' +
+                (s.ratingCount || 0) + ' ratings · 👍 ' + (s.like || 0) +
+                ' · ❤️ ' + (s.heart || 0) +
+                (live ? '' : ' · <i>local</i>');
+        }
+
+        const mine = VoteLog.getMine(roomIdx);
+        const myStar = +mine.rating || 0;
+        document.querySelectorAll('#star-row .star-btn').forEach((btn) => {
+            btn.classList.toggle('on', +btn.getAttribute('data-star') <= myStar && myStar > 0);
+        });
+
+        if (document.getElementById('scoreboard-modal')?.classList.contains('open')) {
+            renderScoreboardList();
+        }
+    }
+
+    function renderScoreboardList() {
+        const list = document.getElementById('scoreboard-list');
+        const sync = document.getElementById('scoreboard-sync');
+        if (!list) return;
+        const rows = VoteLog.getBoard(boardViewRoom);
+        const myName = VoteLog.playerName();
+        const live = VoteLog.getBackend() !== 'local';
+        if (sync) {
+            sync.textContent = (live ? 'Worldwide · live board' : 'Local board · upload logs/ for worldwide') +
+                ' · ' + (ROOM_BOARD_NAMES[boardViewRoom] || '');
+        }
+        if (!rows.length) {
+            list.innerHTML = '<div class="board-empty">No scores yet for this game.<br>Play a round and post your score!</div>';
+            return;
+        }
+        list.innerHTML = rows.map((r, i) => {
+            const rank = r.rank || (i + 1);
+            const cls = 'board-row'
+                + (rank === 1 ? ' top1' : rank === 2 ? ' top2' : rank === 3 ? ' top3' : '')
+                + (myName && r.name === myName ? ' me' : '');
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : String(rank);
+            return '<div class="' + cls + '">'
+                + '<div class="board-rank">' + medal + '</div>'
+                + '<div class="board-name">' + escapeHtml(r.name) + '</div>'
+                + '<div class="board-score">' + Number(r.score).toLocaleString() + '</div>'
+                + '</div>';
+        }).join('');
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function openScoreboard(room) {
+        if (typeof room === 'number') boardViewRoom = room;
+        else if (typeof currentRoomIndex === 'number') boardViewRoom = currentRoomIndex;
+        document.getElementById('scoreboard-modal')?.classList.add('open');
+        showBoardRoom(boardViewRoom);
+        VoteLog.probeApi().then(() => renderVoteUI());
+        if (typeof sfx !== 'undefined' && sfx.click) sfx.click();
+    }
+    function closeScoreboard() {
+        document.getElementById('scoreboard-modal')?.classList.remove('open');
+    }
+    function showBoardRoom(room) {
+        boardViewRoom = +room || 0;
+        document.querySelectorAll('#scoreboard-tabs button').forEach((btn) => {
+            btn.classList.toggle('active', +btn.getAttribute('data-room') === boardViewRoom);
+        });
+        renderScoreboardList();
+    }
+
+    function offerScoreSubmit(room, score) {
+        score = Math.floor(+score || 0);
+        if (score < 1) return;
+        pendingScore = { room: +room, score };
+        const modal = document.getElementById('score-submit-modal');
+        const val = document.getElementById('score-submit-value');
+        const lead = document.getElementById('score-submit-lead');
+        const input = document.getElementById('score-name-input');
+        if (val) val.textContent = score.toLocaleString() + ' pts';
+        if (lead) lead.textContent = 'Post to the worldwide ' + (ROOM_BOARD_NAMES[room] || 'game') + ' board.';
+        if (input) input.value = VoteLog.playerName() || '';
+        modal?.classList.add('open');
+        setTimeout(() => input?.focus(), 50);
+    }
+    function skipScoreSubmit() {
+        pendingScore = null;
+        document.getElementById('score-submit-modal')?.classList.remove('open');
+    }
+    async function confirmScoreSubmit() {
+        if (!pendingScore) { skipScoreSubmit(); return; }
+        const input = document.getElementById('score-name-input');
+        const name = (input?.value || '').trim();
+        if (name.length < 2) {
+            input?.focus();
+            return;
+        }
+        const { room, score } = pendingScore;
+        pendingScore = null;
+        document.getElementById('score-submit-modal')?.classList.remove('open');
+        await VoteLog.postScore(room, score, name);
+        renderVoteUI();
+        openScoreboard(room);
+        if (typeof sfx !== 'undefined' && sfx.click) sfx.click();
+    }
+
+    async function castReaction(room, kind, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        const mine = VoteLog.getMine(room);
+        const next = mine[kind] ? 0 : 1;
+        await VoteLog.postVote(room, kind, next);
+        renderVoteUI();
+        if (typeof sfx !== 'undefined' && sfx.click) sfx.click();
+    }
+
+    async function castRating(stars) {
+        stars = Math.max(1, Math.min(5, +stars || 0));
+        if (!stars) return;
+        await VoteLog.postVote(currentRoomIndex, 'rating', stars);
+        const panel = document.getElementById('game-rate-panel');
+        if (panel) {
+            panel.classList.add('thanks', 'open');
+            setTimeout(() => panel.classList.remove('thanks'), 2200);
+        }
+        renderVoteUI();
+        if (typeof sfx !== 'undefined' && sfx.click) sfx.click();
+    }
+
+    function toggleRatePanel(open) {
+        const panel = document.getElementById('game-rate-panel');
+        if (!panel) return;
+        panel.classList.toggle('open', !!open);
+        if (open) renderVoteUI();
+    }
+
+    function showRatePanelForRoom(show) {
+        const panel = document.getElementById('game-rate-panel');
+        if (!panel) return;
+        panel.classList.toggle('show', !!show);
+        if (!show) panel.classList.remove('open', 'thanks');
+        if (show) renderVoteUI();
+    }
+
+    VoteLog.probeApi().then(() => renderVoteUI());
+    setInterval(() => {
+        if (document.getElementById('home-view')?.style.display !== 'none') {
+            VoteLog.probeApi().then(() => renderVoteUI());
+        }
+    }, 60000);
+
     function animateDust() {
         if (document.getElementById('home-view').style.display !== 'none') {
             dustCtx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
@@ -2312,35 +3374,51 @@
             t += 0.02;
             const [p1,p2,p3,p4] = cx;
             const W = 280, H = 140;
+            // Room 01 — river + bins preview
             p1.clearRect(0,0,W,H);
-            p1.fillStyle = '#0e2b2a'; p1.fillRect(0,0,W,H);
-            p1.fillStyle = 'rgba(63,212,200,.5)';
-            for (let i=0;i<3;i++){ p1.beginPath(); p1.arc(40+i*90+Math.sin(t+i)*10, 100+Math.cos(t*1.3+i)*8, 10, 0, 7); p1.fill(); }
-            p1.strokeStyle='rgba(232,184,74,.8)'; p1.lineWidth=2;
-            p1.beginPath(); p1.moveTo(0,50+Math.sin(t)*6); p1.lineTo(W,60+Math.cos(t)*6); p1.stroke();
+            const g1 = p1.createLinearGradient(0,0,0,H);
+            g1.addColorStop(0,'#134652'); g1.addColorStop(1,'#0a2a32');
+            p1.fillStyle = g1; p1.fillRect(0,0,W,H);
+            p1.fillStyle = '#1a7a72'; p1.fillRect(0, H*0.62, W, H*0.38);
+            p1.fillStyle = '#3fd4c8';
+            for (let i=0;i<4;i++){ p1.beginPath(); p1.ellipse(30+i*70+Math.sin(t+i)*8, H*0.7+Math.cos(t*1.2+i)*4, 14, 6, 0, 0, 7); p1.fill(); }
+            p1.fillStyle = '#2f5744'; p1.fillRect(40, 36, 28, 34); p1.fillRect(200, 40, 28, 34);
+            p1.fillStyle = '#e8b84a'; p1.font = 'bold 10px monospace'; p1.fillText('BIN', 45, 56); p1.fillText('BIN', 205, 60);
 
+            // Room 02 — highway + cars + star
             p2.clearRect(0,0,W,H);
-            p2.fillStyle = '#241d14'; p2.fillRect(0,0,W,H);
-            p2.strokeStyle='rgba(255,255,255,.3)'; p2.lineWidth=3; p2.setLineDash([14,10]);
-            p2.beginPath(); p2.moveTo(0,H/2); p2.lineTo(W,H/2); p2.stroke(); p2.setLineDash([]);
-            const cxp = (t*60)%(W+40)-20;
-            p2.fillStyle='#d97736'; p2.fillRect(cxp,H/2-14,26,14);
-            p2.fillStyle='#8b5a2b'; p2.fillRect((cxp+160)%(W+40)-20,H/2+2,22,12);
+            p2.fillStyle = '#1c3024'; p2.fillRect(0,0,W,H);
+            p2.fillStyle = '#262b28'; p2.fillRect(W*0.22, 0, W*0.56, H);
+            p2.strokeStyle='#dfb15b'; p2.lineWidth=3;
+            p2.beginPath(); p2.moveTo(W*0.22,0); p2.lineTo(W*0.22,H); p2.moveTo(W*0.78,0); p2.lineTo(W*0.78,H); p2.stroke();
+            p2.strokeStyle='rgba(255,255,255,.35)'; p2.lineWidth=2; p2.setLineDash([10,12]); p2.lineDashOffset = -t*40;
+            p2.beginPath(); p2.moveTo(W*0.5,0); p2.lineTo(W*0.5,H); p2.stroke(); p2.setLineDash([]);
+            const cy = (t*50)%(H+30)-20;
+            p2.fillStyle='#dfb15b'; p2.fillRect(W*0.5-10, H-28, 20, 22);
+            p2.fillStyle='#a33b3b'; p2.fillRect(W*0.32, cy, 18, 24);
+            p2.fillStyle='#3b6ea3'; p2.fillRect(W*0.62, (cy+70)%(H+30)-20, 18, 24);
+            p2.fillStyle='#ffd56a'; p2.beginPath(); p2.arc(W*0.5, 36+Math.sin(t*3)*4, 8, 0, 7); p2.fill();
 
+            // Room 03 — letter balloons
             p3.clearRect(0,0,W,H);
-            p3.fillStyle = '#152847'; p3.fillRect(0,0,W,H);
-            for (let i=0;i<2;i++){
-                const bx = 90+i*100, by = 60+Math.sin(t*1.5+i*2)*22;
-                p3.fillStyle='#f2efe6'; p3.beginPath(); p3.ellipse(bx,by,16,20,0,0,7); p3.fill();
-                p3.strokeStyle='rgba(255,255,255,.4)'; p3.beginPath(); p3.moveTo(bx,by+20); p3.lineTo(bx,by+40); p3.stroke();
-            }
+            const g3 = p3.createLinearGradient(0,0,0,H);
+            g3.addColorStop(0,'#0e1a14'); g3.addColorStop(1,'#1a2e23');
+            p3.fillStyle = g3; p3.fillRect(0,0,W,H);
+            const letters = ['W','O','R','D'];
+            letters.forEach((ch,i) => {
+                const bx = 48+i*60, by = 55+Math.sin(t*1.4+i)*18;
+                p3.fillStyle = ['#dfb15b','#3b6e56','#5b86c9','#c96f9b'][i];
+                p3.beginPath(); p3.arc(bx, by, 18, 0, 7); p3.fill();
+                p3.fillStyle='#0e1a14'; p3.font='bold 14px monospace'; p3.textAlign='center'; p3.fillText(ch, bx, by+5);
+            });
 
+            // Room 04 — hand / gesture mirror
             p4.clearRect(0,0,W,H);
-            p4.fillStyle = '#2a1f33'; p4.fillRect(0,0,W,H);
-            const r = 20+Math.sin(t*2)*6;
-            p4.strokeStyle='rgba(255,255,255,.6)'; p4.lineWidth=3;
-            p4.beginPath(); p4.arc(W/2,H/2,r,0,7); p4.stroke();
-            p4.fillStyle='rgba(232,184,74,.8)'; p4.beginPath(); p4.arc(W/2,H/2,4,0,7); p4.fill();
+            p4.fillStyle = '#1a2e23'; p4.fillRect(0,0,W,H);
+            p4.fillStyle = 'rgba(0,0,0,.25)'; p4.beginPath(); p4.roundRect ? p4.roundRect(70,20,140,100,12) : p4.rect(70,20,140,100); p4.fill();
+            p4.font = '42px serif'; p4.textAlign = 'center';
+            p4.fillText(['✌️','👍','👎','🙌'][Math.floor(t)%4], W/2, H/2+8);
+            p4.fillStyle='#dfb15b'; p4.font='bold 11px monospace'; p4.fillText('GESTURE', W/2, H-14);
 
             requestAnimationFrame(frame);
         }
@@ -2441,22 +3519,25 @@
         if (lesson) lesson.textContent = data.lesson;
         if (meta) meta.textContent = data.meta;
         if (desc) desc.textContent = data.desc.replace(/^"|"$/g, '');
+        // Keep tall gallery cards in sync with roomsData
+        cards.forEach((card, idx) => {
+            const rd = roomsData[idx];
+            if (!rd) return;
+            const cl = card.querySelector('.card-lesson');
+            const cd = card.querySelector('.card-desc');
+            const ct = card.querySelector('.card-title');
+            if (cl) cl.textContent = rd.lesson;
+            if (cd) cd.textContent = rd.desc.replace(/^"|"$/g, '');
+            if (ct) ct.textContent = rd.title;
+        });
         const counter = document.getElementById('room-counter-cur');
         if (counter) counter.textContent = String(currentRoomIndex + 1).padStart(2, '0');
 
         const slider = document.getElementById('room-slider');
         if (slider && parseInt(slider.value, 10) !== currentRoomIndex) slider.value = currentRoomIndex;
 
-        const dropdown = document.getElementById('detail-dropdown');
-        const inner = document.getElementById('popup-inner');
-        if (dropdown) {
-            dropdown.classList.add('open');
-            if (animateDetail && inner) {
-                inner.classList.remove('popup-swap');
-                void inner.offsetWidth;
-                inner.classList.add('popup-swap');
-            }
-        }
+        // Detail dropdown kept in DOM for compatibility but never shown —
+        // focused card is the single source of truth for room info + Play.
     }
 
     function selectRoom(index) {
@@ -2491,10 +3572,43 @@
     });
     updateCarouselUI({ animateDetail: false });
 
+    function isGameFullscreen() {
+        const doc = document;
+        return !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement);
+    }
+
+    // Must be called directly from a user gesture (Play click / Enter).
+    function enterGameFullscreen() {
+        if (isGameFullscreen()) return Promise.resolve();
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        if (!req) return Promise.resolve();
+        try {
+            const result = req.call(el);
+            return result && typeof result.then === 'function' ? result.catch(() => {}) : Promise.resolve();
+        } catch (err) {
+            return Promise.resolve();
+        }
+    }
+
+    function exitGameFullscreen() {
+        if (!isGameFullscreen()) return;
+        const doc = document;
+        const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        if (!exit) return;
+        try {
+            const result = exit.call(doc);
+            if (result && typeof result.catch === 'function') result.catch(() => {});
+        } catch (err) { /* ignored */ }
+    }
+
     function enterCurrentRoom(e) {
         ensureAudio();
         sfx.whoosh();
         if (document.activeElement) document.activeElement.blur();
+        // Request fullscreen immediately while still in the user-gesture stack
+        // so browser chrome / bottom bars don't cover game HUDs.
+        enterGameFullscreen();
         const veil = document.getElementById('transition-veil');
         let originX = '50%', originY = '50%';
         if (e && e.clientX) { originX = e.clientX + 'px'; originY = e.clientY + 'px'; }
@@ -2514,7 +3628,14 @@
             if (currentRoomIndex === 1) { resizeCanvas(c2); resetPlayerCar(); }
             if (currentRoomIndex === 2) { resizeCanvas(c3); }
             if (currentRoomIndex === 3) { resizeGestureCanvasDefault(); }
+            // Re-fit canvases after the fullscreen transition settles
+            setTimeout(() => {
+                if (currentRoomIndex === 1) resizeCanvas(c2);
+                if (currentRoomIndex === 2) resizeCanvas(c3);
+                if (currentRoomIndex === 3) resizeGestureCanvasDefault();
+            }, 200);
             runCountdown();
+            showRatePanelForRoom(true);
 
             veil.classList.remove('closing');
             veil.classList.add('opening');
@@ -2538,20 +3659,68 @@
         step();
     }
 
+    window.addEventListener('message', (e) => {
+        if (!e || !e.data) return;
+        if (e.data.type === 'gallery-exit') showHome();
+        if (e.data.type === 'gallery-score') {
+            const room = +e.data.room || 0;
+            const score = +e.data.score || 0;
+            const name = (e.data.name || '').trim();
+            if (name.length >= 2) VoteLog.setPlayerName(name);
+            if (score > 0) offerScoreSubmit(room, score);
+        }
+    });
+
+    function gestureSessionScore() {
+        const ids = ['hud-g-victory', 'hud-g-like', 'hud-g-dislike', 'hud-g-five'];
+        return ids.reduce((sum, id) => sum + (+document.getElementById(id)?.textContent || 0), 0);
+    }
+
     function showHome() {
+        // Capture scores before tearing rooms down
+        let leaveScore = null;
+        if (document.getElementById('screen-room-3')?.classList.contains('active') && typeof score === 'number' && score > 0) {
+            leaveScore = { room: 2, score };
+        } else if (document.getElementById('screen-room-4')?.classList.contains('active')) {
+            const gScore = gestureSessionScore();
+            if (gScore > 0) leaveScore = { room: 3, score: gScore };
+        } else if (document.getElementById('screen-room-2')?.classList.contains('active') && typeof pointScore === 'number' && pointScore > 0 && typeof gameOverActive !== 'undefined' && !gameOverActive) {
+            leaveScore = { room: 1, score: pointScore };
+        }
+
         sfx.click();
+        exitGameFullscreen();
         stopCamera();
         if (typeof stopMic === 'function') stopMic();
         if (typeof stopRaceEngine === 'function') stopRaceEngine();
         const wf = document.getElementById('waste-room1-iframe');
         if (wf && wasteGameLoaded) { wf.srcdoc = ''; wasteGameLoaded = false; }
         document.querySelectorAll('.room-screen').forEach(s => s.classList.remove('active'));
+        showRatePanelForRoom(false);
+        closeScoreboard();
         const home = document.getElementById('home-view');
         home.style.display = 'flex';
         home.style.animation = 'none';
         void home.offsetWidth;
         home.style.animation = 'home-fade-in 0.5s var(--ease-out) forwards';
+        if (typeof VoteLog !== 'undefined') VoteLog.probeApi().then(() => renderVoteUI());
+        else if (typeof renderVoteUI === 'function') renderVoteUI();
+        if (leaveScore) setTimeout(() => offerScoreSubmit(leaveScore.room, leaveScore.score), 400);
     }
+
+    document.getElementById('score-name-input')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmScoreSubmit();
+    });
+
+    // Keep play canvases sized when the browser enters/leaves fullscreen
+    document.addEventListener('fullscreenchange', () => {
+        if (document.getElementById('screen-room-2')?.classList.contains('active')) resizeCanvas(c2);
+        if (document.getElementById('screen-room-3')?.classList.contains('active')) resizeCanvas(c3);
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+        if (document.getElementById('screen-room-2')?.classList.contains('active')) resizeCanvas(c2);
+        if (document.getElementById('screen-room-3')?.classList.contains('active')) resizeCanvas(c3);
+    });
 
     function resizeCanvas(canvas) {
         canvas.width = window.innerWidth;
@@ -2614,11 +3783,14 @@
 
     function bindRaceControl(id, key) {
         const button = document.getElementById(id);
+        if (!button) return;
         const press = e => {
             e.preventDefault();
             keys[key] = true;
             button.classList.add('pressed');
-            if (button.setPointerCapture && e.pointerId != null) button.setPointerCapture(e.pointerId);
+            if (button.setPointerCapture && e.pointerId != null) {
+                try { button.setPointerCapture(e.pointerId); } catch (err) {}
+            }
         };
         const release = e => {
             e.preventDefault();
@@ -2632,6 +3804,21 @@
     }
     bindRaceControl('race-left', 'ArrowLeft');
     bindRaceControl('race-right', 'ArrowRight');
+
+    // Dragging across the midline updates which side is held
+    document.getElementById('screen-room-2').addEventListener('pointermove', e => {
+        if (!document.getElementById('screen-room-2').classList.contains('active')) return;
+        if (e.buttons === 0 && e.pointerType === 'mouse') return;
+        const left = document.getElementById('race-left');
+        const right = document.getElementById('race-right');
+        if (!left.classList.contains('pressed') && !right.classList.contains('pressed') && e.pressure === 0 && e.pointerType !== 'touch') return;
+        const mid = window.innerWidth / 2;
+        const goLeft = e.clientX < mid;
+        keys['ArrowLeft'] = goLeft;
+        keys['ArrowRight'] = !goLeft;
+        left.classList.toggle('pressed', goLeft);
+        right.classList.toggle('pressed', !goLeft);
+    });
 
     const playerCar = {
         x: 0, y: 0, speed: 6, maxSpeed: 12, lateralSpeed: 7.5
@@ -2907,6 +4094,7 @@
         document.getElementById('go-distance').textContent = pointScore;
         document.getElementById('go-best').textContent = bestPoints;
         document.getElementById('game-over-2').classList.add('show');
+        if (pointScore > 0) setTimeout(() => offerScoreSubmit(1, pointScore), 600);
     }
 
     function spawnSparks(x, y) {
@@ -3193,6 +4381,17 @@
             isSpacePressed = false;
         }
     });
+
+    (function bindBalloonLift() {
+        const btn = document.getElementById('balloon-lift-btn');
+        if (!btn) return;
+        const down = e => { e.preventDefault(); isSpacePressed = true; btn.classList.add('pressed'); };
+        const up = e => { e.preventDefault(); isSpacePressed = false; btn.classList.remove('pressed'); };
+        btn.addEventListener('pointerdown', down);
+        btn.addEventListener('pointerup', up);
+        btn.addEventListener('pointercancel', up);
+        btn.addEventListener('lostpointercapture', up);
+    })();
 
     let micStream = null;
     let micRAF = null;
@@ -3757,6 +4956,7 @@
         fb._hideTimer = setTimeout(() => fb.classList.remove('show'), 1100);
         g.snd();
     }
+    window.fireGesture = fireGesture;
 
     function setCaptureUi() {
         const banner = document.getElementById('gesture-capture-banner');
@@ -4964,11 +6164,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   .hud-stat-score .v { font-size: 1.02rem; }
   .hud-ico { width: .85rem; font-size: .72rem; }
   .hud-icon-btn { width: 28px; height: 28px; border-radius: 6px; font-size: .76rem; }
-  .hud-meters { flex: 1 1 100%; order: 3; gap: .3rem; min-width: 100%; }
+  .hud-meters {
+    flex: 1 1 100%; order: 3; gap: .35rem; min-width: 100%;
+    margin-top: .28rem; padding-top: .28rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
   .hud-actions { margin-left: auto; order: 2; }
   .hud-meter .k { font-size: .48rem; }
   .meter-pct { font-size: .66rem; min-width: 1.9rem; }
-  .pollution-bar, .jam-bar { height: 3px; }
+  .pollution-bar, .jam-bar { height: 4px; }
+  #btn-gallery-exit {
+    width: 34px; height: 34px; border-color: rgba(232,184,74,.55); color: #e8b84a;
+  }
   .hud-map { display: none; }
   .flood-banner { top: 4.2rem; font-size: .74rem; max-width: min(96vw, 24rem); }
   .score-table-wrap { display: none; }
@@ -4980,8 +6187,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
     width: min(96vw, 560px); gap: .55rem; margin-top: .35rem;
   }
   #screen-menu {
-    justify-content: flex-start; gap: 1rem;
-    padding-top: max(1.1rem, env(safe-area-inset-top));
+    justify-content: safe center; gap: 1rem;
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
   #screen-menu .title-lockup .bn { font-size: clamp(1.9rem, 9vw, 2.8rem); }
   #screen-menu .title-lockup .alt { margin-top: .3rem; gap: .45rem; font-size: .85rem; }
@@ -5079,7 +6287,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   .score-board-cards { grid-template-columns: 1fr 1fr; gap: .4rem; }
 }
 @media (max-height: 640px) and (orientation: portrait) {
-  #screen-menu { justify-content: flex-start; gap: .75rem; }
+  #screen-menu { justify-content: safe center; gap: .75rem; }
   #screen-menu .title-lockup .bn { font-size: clamp(1.7rem, 8vw, 2.4rem); }
   .menu-sdg-strip .sdg-img { width: 2.9rem; height: 2.9rem; font-size: .85rem; }
   .brand-footer { position: static; transform: none; margin-top: .25rem; }
@@ -5521,6 +6729,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
           </div>
         </div>
         <div class="hud-actions">
+          <button type="button" class="hud-icon-btn" id="btn-gallery-exit" aria-label="Back to Gallery" title="Gallery">←</button>
           <button type="button" class="hud-icon-btn" id="btn-cam-reset" aria-label="Reset camera" title="Reset view">↺</button>
           <button type="button" class="hud-icon-btn" id="btn-mute" aria-label="Mute" title="Sound">🔊</button>
           <button type="button" class="hud-icon-btn" id="btn-fs-hud" aria-label="Fullscreen" title="Fullscreen">⛶</button>
@@ -5551,6 +6760,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
         <button type="button" class="btn btn-ghost" id="btn-restart" data-i18n="restart">আবার শুরু</button>
         <button type="button" class="btn btn-ghost" id="btn-pause-settings" data-i18n="settings">সেটিংস</button>
         <button type="button" class="btn btn-ghost" id="btn-pause-menu" data-i18n="mainMenu">মূল মেনু</button>
+        <button type="button" class="btn btn-primary" id="btn-pause-gallery">← Gallery</button>
       </div>
     </div>
   </div>
@@ -10282,6 +11492,18 @@ class UIManager {
     this._el('btn-board-close').addEventListener('click', () => g.closeScoreboard());
     this._el('btn-clear-scores').addEventListener('click', () => g.clearScores());
     this._el('btn-pause').addEventListener('click', () => g.pauseGame());
+    const galleryExit = this._el('btn-gallery-exit');
+    if (galleryExit) {
+      galleryExit.addEventListener('click', () => {
+        try { parent.postMessage({ type: 'gallery-exit' }, '*'); } catch (e) {}
+      });
+    }
+    const pauseGallery = this._el('btn-pause-gallery');
+    if (pauseGallery) {
+      pauseGallery.addEventListener('click', () => {
+        try { parent.postMessage({ type: 'gallery-exit' }, '*'); } catch (e) {}
+      });
+    }
     this._el('btn-resume').addEventListener('click', () => g.resumeGame());
     this._el('btn-restart').addEventListener('click', () => g.restartGame());
     this._el('btn-pause-settings').addEventListener('click', () => g.openSettings('pause'));
@@ -11206,6 +12428,16 @@ class Game {
     });
     this.audio.play(entry.won ? 'win' : 'lose');
     if (!this.state.setState(GameState.RESULT)) this.state.force(GameState.RESULT);
+    try {
+      if (window.parent && window.parent !== window && entry.score > 0) {
+        window.parent.postMessage({
+          type: 'gallery-score',
+          room: 0,
+          score: entry.score,
+          name: entry.name || ''
+        }, '*');
+      }
+    } catch (_) { /* cross-origin ignore */ }
   }
 
   pauseGame() {
