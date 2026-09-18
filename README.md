@@ -1,4 +1,4 @@
-# 🎮 Interaction Gallery by Team 5
+# 🎮 Interaction Gallery by Team MONOJOG+
 ### live link: https://abida3564.github.io/Interaction-Gallery/
 
 An interactive gallery of four mini-games, each exploring a different input method: keyboard, mouse, microphone, and camera-based hand gestures. Built with vanilla HTML/CSS/JS, WebGL/Canvas, and [MediaPipe Hands](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker) for real-time gesture tracking.
